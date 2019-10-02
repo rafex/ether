@@ -68,4 +68,9 @@ public abstract class ServletUtil {
         }
 
     }
+
+    public static boolean validPath(final HttpServletRequest request) {
+        final String pathInfo = request.getPathInfo();
+        return pathInfo == null || pathInfo.equals("/");
+    }
 }
