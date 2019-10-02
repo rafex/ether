@@ -29,15 +29,21 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>mx.rafex.utils.json</groupId>
+			<artifactId>UTILS-JSON</artifactId>
+			<version>${UTILS-JSON.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${javax.servlet-api.version}</version>
 		</dependency>
 		<dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>${jetty-servlet.version}</version>
-        </dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>${jetty-servlet.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
