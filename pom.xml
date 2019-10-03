@@ -67,6 +67,8 @@
     		
 		
     <UTILS-JSON.version>1.0-SNAPSHOT</UTILS-JSON.version>
+    <UTILS-REST.version>1.0-SNAPSHOT</UTILS-REST.version>
+    <UTILS-JDBC.version>1.0-SNAPSHOT</UTILS-JDBC.version>
     	
   </properties>
   	

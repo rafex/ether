@@ -58,13 +58,18 @@ public abstract class ServletUtil {
 
         final String res = JsonUtils.aJsonExcludeFieldsWithoutExposeAnnotation(obj);
 
-        PrintWriter out;
+        PrintWriter out = null;
         try {
             out = response.getWriter();
             out.print(res);
             out.flush();
+
         } catch (final IOException e) {
             e.printStackTrace();
+        } finally {
+            if (out != null) {
+                out.close();
+            }
         }
 
     }
