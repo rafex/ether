@@ -44,8 +44,6 @@ public class ServerRafex {
 
         final FilterHolder filter = new FilterHolder(new CORSFilter());
         filter.setName("CorsFilter");
-//        final CORSFilter corsFilter = new CORSFilter();
-//        filter.setFilter(corsFilter);
 
         context.addFilter(filter, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC));
 
