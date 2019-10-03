@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.Servlet;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,13 +15,13 @@ import mx.rafex.utils.json.JsonUtils;
 
 public abstract class ServletUtil {
 
-    public static String getBasePath(final Class<? extends Servlet> servlet) {
-        final String path = getBasePaths(servlet) != null && getBasePaths(servlet).length > 0 ? getBasePaths(servlet)[0] : null;
+    public static String getBasePath(final Class<? extends HttpServlet> httpServlet) {
+        final String path = getBasePaths(httpServlet) != null && getBasePaths(httpServlet).length > 0 ? getBasePaths(httpServlet)[0] : null;
         return path;
     }
 
-    public static String[] getBasePaths(final Class<? extends Servlet> servlet) {
-        final WebServlet webServlet = servlet.getAnnotation(WebServlet.class);
+    public static String[] getBasePaths(final Class<? extends HttpServlet> httpServlet) {
+        final WebServlet webServlet = httpServlet.getAnnotation(WebServlet.class);
         String[] paths = null;
 
         if (webServlet.value().length > 0) {

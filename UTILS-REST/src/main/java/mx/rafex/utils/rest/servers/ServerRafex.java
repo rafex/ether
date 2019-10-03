@@ -3,7 +3,7 @@ package mx.rafex.utils.rest.servers;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.Servlet;
+import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -22,9 +22,9 @@ public class ServerRafex {
     private final String host;
     private final ServletContextHandler context;
     private final QueuedThreadPool threadPool;
-    private int maxThreads = 100;
-    private int minThreads = 10;
-    private int idleTimeout = 3000;
+    private final int maxThreads;
+    private final int minThreads;
+    private final int idleTimeout;
 
     private ServerRafex(final Builder builder) {
 
@@ -42,10 +42,10 @@ public class ServerRafex {
         server.addConnector(connector);
         context = new ServletContextHandler();
 
-        final FilterHolder filter = new FilterHolder(CORSFilter.class);
+        final FilterHolder filter = new FilterHolder(new CORSFilter());
         filter.setName("CorsFilter");
-        final CORSFilter corsFilter = new CORSFilter();
-        filter.setFilter(corsFilter);
+//        final CORSFilter corsFilter = new CORSFilter();
+//        filter.setFilter(corsFilter);
 
         context.addFilter(filter, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC));
 
@@ -63,9 +63,9 @@ public class ServerRafex {
         }
     }
 
-    public void addServlet(final Class<? extends Servlet> servlet) {
+    public void addServlet(final Class<? extends HttpServlet> httpServlet) {
         if (context != null) {
-            context.addServlet(servlet, ServletUtil.getBasePath(servlet));
+            context.addServlet(httpServlet, ServletUtil.getBasePath(httpServlet));
         } else {
             throw new NullPointerException("ServletContextHandler null");
         }
@@ -83,7 +83,7 @@ public class ServerRafex {
             host = "0.0.0.0";
             maxThreads = 100;
             minThreads = 10;
-            idleTimeout = 120;
+            idleTimeout = 3000;
         }
 
         public Builder maxThreads(final int maxThreads) {
