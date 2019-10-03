@@ -54,7 +54,7 @@ public abstract class ServletUtil {
 
     public static void responseAsJson(final HttpServletResponse response, final Object obj) {
 
-        response.setContentType("application/json");
+        response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
 
         final String res = JsonUtils.aJsonExcludeFieldsWithoutExposeAnnotation(obj);
 

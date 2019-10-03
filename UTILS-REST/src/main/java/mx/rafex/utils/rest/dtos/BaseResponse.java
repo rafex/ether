@@ -1,4 +1,4 @@
-package mx.rafex.utils.rest.servlets;
+package mx.rafex.utils.rest.dtos;
 
 import java.io.Serializable;
 
@@ -6,7 +6,7 @@ import com.google.gson.annotations.Expose;
 
 import mx.rafex.utils.json.JsonUtils;
 
-public class RespuestaBase implements Serializable {
+public class BaseResponse implements Serializable {
 
     private static final long serialVersionUID = 8023644832677222940L;
 
@@ -19,7 +19,7 @@ public class RespuestaBase implements Serializable {
     @Expose
     private final String exception;
 
-    private RespuestaBase(final Builder builder) {
+    private BaseResponse(final Builder builder) {
         code = builder.code;
         object = builder.object;
         message = builder.message;
@@ -73,8 +73,8 @@ public class RespuestaBase implements Serializable {
             return this;
         }
 
-        public RespuestaBase build() {
-            return new RespuestaBase(this);
+        public BaseResponse build() {
+            return new BaseResponse(this);
         }
     }
 

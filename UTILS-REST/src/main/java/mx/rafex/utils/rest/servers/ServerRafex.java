@@ -1,4 +1,4 @@
-package mx.rafex.utils.rest.server;
+package mx.rafex.utils.rest.servers;
 
 import java.util.EnumSet;
 
@@ -11,7 +11,7 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import mx.rafex.utils.rest.servlets.CORSFilter;
+import mx.rafex.utils.rest.filters.CORSFilter;
 import mx.rafex.utils.rest.servlets.ServletUtil;
 
 public class ServerRafex {
@@ -24,7 +24,7 @@ public class ServerRafex {
     private final QueuedThreadPool threadPool;
     private int maxThreads = 100;
     private int minThreads = 10;
-    private int idleTimeout = 120;
+    private int idleTimeout = 3000;
 
     private ServerRafex(final Builder builder) {
 
