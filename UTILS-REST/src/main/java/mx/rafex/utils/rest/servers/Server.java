@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServlet;
 
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -14,9 +13,9 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import mx.rafex.utils.rest.filters.CORSFilter;
 import mx.rafex.utils.rest.servlets.ServletUtil;
 
-public class ServerRafex {
+public class Server {
 
-    private final Server server;
+    private final org.eclipse.jetty.server.Server server;
     private final ServerConnector connector;
     private final int port;
     private final String host;
@@ -26,7 +25,7 @@ public class ServerRafex {
     private final int minThreads;
     private final int idleTimeout;
 
-    private ServerRafex(final Builder builder) {
+    private Server(final Builder builder) {
 
         port = builder.port;
         host = builder.host;
@@ -34,7 +33,7 @@ public class ServerRafex {
         minThreads = builder.minThreads;
         idleTimeout = builder.idleTimeout;
         threadPool = new QueuedThreadPool(maxThreads, minThreads, idleTimeout);
-        server = new Server(threadPool);
+        server = new org.eclipse.jetty.server.Server(threadPool);
 
         connector = new ServerConnector(server);
         connector.setPort(port);
@@ -109,8 +108,8 @@ public class ServerRafex {
             return this;
         }
 
-        public ServerRafex build() {
-            return new ServerRafex(this);
+        public Server build() {
+            return new Server(this);
         }
     }
 

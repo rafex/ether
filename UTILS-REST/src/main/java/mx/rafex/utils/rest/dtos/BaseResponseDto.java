@@ -6,7 +6,7 @@ import com.google.gson.annotations.Expose;
 
 import mx.rafex.utils.json.JsonUtils;
 
-public class BaseResponse implements Serializable {
+public class BaseResponseDto implements Serializable {
 
     private static final long serialVersionUID = 8023644832677222940L;
 
@@ -19,7 +19,7 @@ public class BaseResponse implements Serializable {
     @Expose
     private final String exception;
 
-    private BaseResponse(final Builder builder) {
+    private BaseResponseDto(final Builder builder) {
         code = builder.code;
         object = builder.object;
         message = builder.message;
@@ -73,8 +73,8 @@ public class BaseResponse implements Serializable {
             return this;
         }
 
-        public BaseResponse build() {
-            return new BaseResponse(this);
+        public BaseResponseDto build() {
+            return new BaseResponseDto(this);
         }
     }
 

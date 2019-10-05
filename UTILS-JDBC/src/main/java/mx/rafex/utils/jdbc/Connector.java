@@ -5,13 +5,19 @@ import java.sql.Driver;
 
 public interface Connector {
 
-    Connection connect(final String className, final String url, final String user, final String password);
+    String JDBC_PROPERTIES = "jdbc.properties";
 
-    Connection connect(final String className, final String url);
+    Connection connect(String className, String url, String user, String password);
 
-    Connection connect(final Driver driver, final String url, final String user, final String password);
+    Connection connect(String className, String url);
 
-    Connection connect(final Driver driver, final String url);
+    Connection connect(Driver driver, String url, String user, String password);
+
+    Connection connect(Driver driver, String url);
+
+    Connection connect(Driver driver, String url, Class<?> clazz);
+
+    Connection connect(String className, String url, Class<?> clazz);
 
     void close();
 }

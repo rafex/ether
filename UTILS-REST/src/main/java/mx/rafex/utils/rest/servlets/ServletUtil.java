@@ -13,7 +13,10 @@ import org.eclipse.jetty.http.MimeTypes;
 
 import mx.rafex.utils.json.JsonUtils;
 
-public abstract class ServletUtil {
+public class ServletUtil {
+
+    private ServletUtil() {
+    }
 
     public static String getBasePath(final Class<? extends HttpServlet> httpServlet) {
         final String path = getBasePaths(httpServlet) != null && getBasePaths(httpServlet).length > 0 ? getBasePaths(httpServlet)[0] : null;

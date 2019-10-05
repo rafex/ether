@@ -22,13 +22,14 @@ public class CORSFilter implements Filter {
     public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain chain) throws IOException, ServletException {
 
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
+        final HttpServletResponse response = (HttpServletResponse) servletResponse;
         System.out.println("CORSFilter HTTP Request: " + request.getMethod());
 
-        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Origin", "*");
-        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
-        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
+        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
 
-        chain.doFilter(request, servletResponse);
+        chain.doFilter(request, response);
     }
 
     @Override
