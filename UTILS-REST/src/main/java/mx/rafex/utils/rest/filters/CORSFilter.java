@@ -12,8 +12,6 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.http.HttpMethod;
-
 @WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
 public class CORSFilter implements Filter {
 
@@ -29,13 +27,6 @@ public class CORSFilter implements Filter {
         ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Origin", "*");
         ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
         ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-
-        final HttpServletResponse resp = (HttpServletResponse) servletResponse;
-
-        if (request.getMethod().equals(HttpMethod.OPTIONS.asString())) {
-            resp.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
-        }
 
         chain.doFilter(request, servletResponse);
     }
