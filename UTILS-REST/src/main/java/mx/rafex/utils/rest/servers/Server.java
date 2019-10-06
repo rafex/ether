@@ -9,18 +9,22 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import mx.rafex.utils.rest.filters.CORSFilter;
 import mx.rafex.utils.rest.servlets.ServletUtil;
 
 public class Server {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(Server.class);
+
     private final org.eclipse.jetty.server.Server server;
     private final ServerConnector connector;
     private final int port;
     private final String host;
-    private final ServletContextHandler context;
-    private final QueuedThreadPool threadPool;
+    private final ServletContextHandler servletContextHandler;
+    private final QueuedThreadPool queuedThreadPool;
     private final int maxThreads;
     private final int minThreads;
     private final int idleTimeout;
@@ -32,21 +36,24 @@ public class Server {
         maxThreads = builder.maxThreads;
         minThreads = builder.minThreads;
         idleTimeout = builder.idleTimeout;
-        threadPool = new QueuedThreadPool(maxThreads, minThreads, idleTimeout);
-        server = new org.eclipse.jetty.server.Server(threadPool);
+        queuedThreadPool = new QueuedThreadPool(maxThreads, minThreads, idleTimeout);
+        server = new org.eclipse.jetty.server.Server(queuedThreadPool);
 
         connector = new ServerConnector(server);
         connector.setPort(port);
         connector.setHost(host);
         server.addConnector(connector);
-        context = new ServletContextHandler();
+        servletContextHandler = new ServletContextHandler();
 
         final FilterHolder filter = new FilterHolder(new CORSFilter());
         filter.setName("CorsFilter");
 
-        context.addFilter(filter, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC));
+        servletContextHandler.addFilter(filter, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC));
 
-        server.setHandler(context);
+        server.setHandler(servletContextHandler);
+
+        LOGGER.info("Server construido");
+
     }
 
     public void run() {
@@ -54,16 +61,30 @@ public class Server {
             if (server != null) {
                 server.start();
                 server.join();
+                LOGGER.info("Server ejecutandose");
             }
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    public void stop() {
+        try {
+            if (server != null) {
+                server.stop();
+                LOGGER.info("Server detenido");
+            }
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage());
         }
     }
 
     public void addServlet(final Class<? extends HttpServlet> httpServlet) {
-        if (context != null) {
-            context.addServlet(httpServlet, ServletUtil.getBasePath(httpServlet));
+        if (servletContextHandler != null) {
+            servletContextHandler.addServlet(httpServlet, ServletUtil.getBasePath(httpServlet));
+            LOGGER.info("Se agrego servlet: " + httpServlet);
         } else {
+            LOGGER.error("ServletContextHandler null");
             throw new NullPointerException("ServletContextHandler null");
         }
     }

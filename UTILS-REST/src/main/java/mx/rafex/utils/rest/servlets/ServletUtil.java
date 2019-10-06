@@ -10,10 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.MimeTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import mx.rafex.utils.json.JsonUtils;
 
 public class ServletUtil {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(ServletUtil.class);
 
     private ServletUtil() {
     }
@@ -49,7 +53,7 @@ public class ServletUtil {
                 final String payload = buffer.toString();
                 return JsonUtils.aJson(payload, clazz);
             } catch (final IOException ex) {
-
+                LOGGER.error(ex.getMessage());
             }
         }
         return null;

@@ -12,8 +12,13 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
 public class CORSFilter implements Filter {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(CORSFilter.class);
 
     /**
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
@@ -23,7 +28,8 @@ public class CORSFilter implements Filter {
 
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
         final HttpServletResponse response = (HttpServletResponse) servletResponse;
-        System.out.println("CORSFilter HTTP Request: " + request.getMethod());
+
+        LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
 
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
