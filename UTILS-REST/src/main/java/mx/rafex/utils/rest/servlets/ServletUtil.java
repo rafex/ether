@@ -53,7 +53,7 @@ public class ServletUtil {
                 final String payload = buffer.toString();
                 return JsonUtils.aJson(payload, clazz);
             } catch (final IOException ex) {
-                LOGGER.error(ex.getMessage());
+                LOGGER.info(ex.getMessage());
             }
         }
         return null;

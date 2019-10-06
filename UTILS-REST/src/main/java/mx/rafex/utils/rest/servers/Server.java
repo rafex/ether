@@ -30,7 +30,6 @@ public class Server {
     private final int idleTimeout;
 
     private Server(final Builder builder) {
-
         port = builder.port;
         host = builder.host;
         maxThreads = builder.maxThreads;
@@ -64,7 +63,7 @@ public class Server {
                 LOGGER.info("Server ejecutandose");
             }
         } catch (final Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.warn(e.getMessage());
         }
     }
 
@@ -75,7 +74,18 @@ public class Server {
                 LOGGER.info("Server detenido");
             }
         } catch (final Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.warn(e.getMessage());
+        }
+    }
+
+    public void destroy() {
+        try {
+            if (server != null) {
+                server.destroy();
+                LOGGER.info("Server detenido");
+            }
+        } catch (final Exception e) {
+            LOGGER.warn(e.getMessage());
         }
     }
 
@@ -84,7 +94,7 @@ public class Server {
             servletContextHandler.addServlet(httpServlet, ServletUtil.getBasePath(httpServlet));
             LOGGER.info("Se agrego servlet: " + httpServlet);
         } else {
-            LOGGER.error("ServletContextHandler null");
+            LOGGER.warn("ServletContextHandler null");
             throw new NullPointerException("ServletContextHandler null");
         }
     }
