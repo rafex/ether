@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Slf4jLog;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,11 @@ public class Server {
     private final int idleTimeout;
 
     private Server(final Builder builder) {
+        try {
+            Log.setLog(new Slf4jLog());
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
         port = builder.port;
         host = builder.host;
         maxThreads = builder.maxThreads;
