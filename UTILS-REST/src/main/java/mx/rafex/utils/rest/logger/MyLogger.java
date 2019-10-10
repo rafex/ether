@@ -9,9 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import org.eclipse.jetty.util.log.AbstractLogger;
+public class MyLogger {
 
-public class MyLogger extends AbstractLogger {
     static private FileHandler fileTxt;
     static private SimpleFormatter formatterTxt;
 
@@ -45,87 +44,4 @@ public class MyLogger extends AbstractLogger {
         logger.addHandler(fileHTML);
     }
 
-    @Override
-    public String getName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void warn(final String msg, final Object... args) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void warn(final Throwable thrown) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void warn(final String msg, final Throwable thrown) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void info(final String msg, final Object... args) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void info(final Throwable thrown) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void info(final String msg, final Throwable thrown) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean isDebugEnabled() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void setDebugEnabled(final boolean enabled) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void debug(final String msg, final Object... args) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void debug(final Throwable thrown) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void debug(final String msg, final Throwable thrown) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void ignore(final Throwable ignored) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected org.eclipse.jetty.util.log.Logger newLogger(final String fullname) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

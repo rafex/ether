@@ -9,7 +9,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Slf4jLog;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,75 +32,76 @@ public class Server {
 
     private Server(final Builder builder) {
         try {
-            Log.setLog(new Slf4jLog());
+            Log.setLog(new mx.rafex.utils.rest.logger.Logger(java.util.logging.Logger.GLOBAL_LOGGER_NAME));
         } catch (final Exception e) {
             e.printStackTrace();
         }
-        port = builder.port;
-        host = builder.host;
-        maxThreads = builder.maxThreads;
-        minThreads = builder.minThreads;
-        idleTimeout = builder.idleTimeout;
-        queuedThreadPool = new QueuedThreadPool(maxThreads, minThreads, idleTimeout);
-        server = new org.eclipse.jetty.server.Server(queuedThreadPool);
+        this.port = builder.port;
+        this.host = builder.host;
+        this.maxThreads = builder.maxThreads;
+        this.minThreads = builder.minThreads;
+        this.idleTimeout = builder.idleTimeout;
+        this.queuedThreadPool = new QueuedThreadPool(this.maxThreads, this.minThreads, this.idleTimeout);
+        this.server = new org.eclipse.jetty.server.Server(this.queuedThreadPool);
 
-        connector = new ServerConnector(server);
-        connector.setPort(port);
-        connector.setHost(host);
-        server.addConnector(connector);
-        servletContextHandler = new ServletContextHandler();
+        this.connector = new ServerConnector(this.server);
+        this.connector.setPort(this.port);
+        this.connector.setHost(this.host);
+        this.server.addConnector(this.connector);
+        this.servletContextHandler = new ServletContextHandler();
 
         final FilterHolder filter = new FilterHolder(new CORSFilter());
         filter.setName("CorsFilter");
 
-        servletContextHandler.addFilter(filter, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC));
+        this.servletContextHandler.addFilter(filter, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST,
+                DispatcherType.FORWARD, DispatcherType.ASYNC));
 
-        server.setHandler(servletContextHandler);
+        this.server.setHandler(this.servletContextHandler);
 
-        LOGGER.info("Server construido");
+        this.LOGGER.info("Server construido");
 
     }
 
     public void run() {
         try {
-            if (server != null) {
-                server.start();
-                server.join();
-                LOGGER.info("Server ejecutandose");
+            if (this.server != null) {
+                this.server.start();
+                this.server.join();
+                this.LOGGER.info("Server ejecutandose");
             }
         } catch (final Exception e) {
-            LOGGER.warn(e.getMessage());
+            this.LOGGER.warn(e.getMessage());
         }
     }
 
     public void stop() {
         try {
-            if (server != null) {
-                server.stop();
-                LOGGER.info("Server detenido");
+            if (this.server != null) {
+                this.server.stop();
+                this.LOGGER.info("Server detenido");
             }
         } catch (final Exception e) {
-            LOGGER.warn(e.getMessage());
+            this.LOGGER.warn(e.getMessage());
         }
     }
 
     public void destroy() {
         try {
-            if (server != null) {
-                server.destroy();
-                LOGGER.info("Server detenido");
+            if (this.server != null) {
+                this.server.destroy();
+                this.LOGGER.info("Server detenido");
             }
         } catch (final Exception e) {
-            LOGGER.warn(e.getMessage());
+            this.LOGGER.warn(e.getMessage());
         }
     }
 
     public void addServlet(final Class<? extends HttpServlet> httpServlet) {
-        if (servletContextHandler != null) {
-            servletContextHandler.addServlet(httpServlet, ServletUtil.getBasePath(httpServlet));
-            LOGGER.info("Se agrego servlet: " + httpServlet);
+        if (this.servletContextHandler != null) {
+            this.servletContextHandler.addServlet(httpServlet, ServletUtil.getBasePath(httpServlet));
+            this.LOGGER.info("Se agrego servlet: " + httpServlet);
         } else {
-            LOGGER.warn("ServletContextHandler null");
+            this.LOGGER.warn("ServletContextHandler null");
             throw new NullPointerException("ServletContextHandler null");
         }
     }
@@ -114,11 +114,11 @@ public class Server {
         private int idleTimeout;
 
         public Builder() {
-            port = 8080;
-            host = "0.0.0.0";
-            maxThreads = 100;
-            minThreads = 10;
-            idleTimeout = 3000;
+            this.port = 8080;
+            this.host = "0.0.0.0";
+            this.maxThreads = 100;
+            this.minThreads = 10;
+            this.idleTimeout = 3000;
         }
 
         public Builder maxThreads(final int maxThreads) {
