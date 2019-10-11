@@ -1,6 +1,7 @@
 package mx.rafex.utils.rest.filters;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -12,13 +13,10 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
 public class CORSFilter implements Filter {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(CORSFilter.class);
+    private final Logger LOGGER = Logger.getLogger(CORSFilter.class.getName());
 
     /**
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)

@@ -3,6 +3,7 @@ package mx.rafex.utils.rest.servlets;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,14 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.MimeTypes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import mx.rafex.utils.json.JsonUtils;
 
 public class ServletUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ServletUtil.class);
+    private final static Logger LOGGER = Logger.getLogger(ServletUtil.class.getName());
 
     private ServletUtil() {
     }

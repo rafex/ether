@@ -6,6 +6,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
@@ -19,8 +20,10 @@ public class MyLogger {
 
     static public void setup() throws IOException {
 
+        final LogManager lgmngr = LogManager.getLogManager();
+
         // get the global logger to configure it
-        final Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+        final Logger logger = lgmngr.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
         // suppress the logging output to the console
         final Logger rootLogger = Logger.getLogger("");
