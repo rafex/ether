@@ -14,6 +14,8 @@ import org.eclipse.jetty.util.log.Log;
 
 public class Logger extends AbstractLogger {
 
+    private final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(Logger.class.getName());
+
     static {
         try {
             final ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -226,7 +228,7 @@ public class Logger extends AbstractLogger {
                     }
                 }
             } catch (final IOException e) {
-                System.err.println("[WARN] Error loading logging config: " + testProps);
+                LOGGER.warning("[WARN] Error loading logging config: " + testProps);
                 e.printStackTrace();
             }
         }
