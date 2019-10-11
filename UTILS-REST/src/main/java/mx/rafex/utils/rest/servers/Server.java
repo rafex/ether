@@ -1,6 +1,7 @@
 package mx.rafex.utils.rest.servers;
 
 import java.util.EnumSet;
+import java.util.logging.Logger;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServlet;
@@ -8,16 +9,15 @@ import javax.servlet.http.HttpServlet;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import mx.rafex.utils.rest.filters.CORSFilter;
-import mx.rafex.utils.rest.servlets.ServletUtil;
+import mx.rafex.utils.rest.servlets.UtilServlet;
 
 public class Server {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(Server.class);
+    private final Logger LOGGER = Logger.getLogger(Server.class.getName());
 
     private final org.eclipse.jetty.server.Server server;
     private final ServerConnector connector;
@@ -30,6 +30,11 @@ public class Server {
     private final int idleTimeout;
 
     private Server(final Builder builder) {
+        try {
+            Log.setLog(new mx.rafex.utils.rest.logger.Logger(java.util.logging.Logger.GLOBAL_LOGGER_NAME));
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
         port = builder.port;
         host = builder.host;
         maxThreads = builder.maxThreads;
@@ -58,12 +63,15 @@ public class Server {
     public void run() {
         try {
             if (server != null) {
+                LOGGER.info("Server ejecutandose");
                 server.start();
                 server.join();
-                LOGGER.info("Server ejecutandose");
             }
+        } catch (final InterruptedException e) {
+            LOGGER.info("Error al unirse al server");
+            LOGGER.warning(e.getMessage());
         } catch (final Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.warning(e.getMessage());
         }
     }
 
@@ -74,7 +82,7 @@ public class Server {
                 LOGGER.info("Server detenido");
             }
         } catch (final Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.warning(e.getMessage());
         }
     }
 
@@ -85,16 +93,16 @@ public class Server {
                 LOGGER.info("Server detenido");
             }
         } catch (final Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.warning(e.getMessage());
         }
     }
 
     public void addServlet(final Class<? extends HttpServlet> httpServlet) {
         if (servletContextHandler != null) {
-            servletContextHandler.addServlet(httpServlet, ServletUtil.getBasePath(httpServlet));
+            servletContextHandler.addServlet(httpServlet, UtilServlet.getBasePath(httpServlet));
             LOGGER.info("Se agrego servlet: " + httpServlet);
         } else {
-            LOGGER.warn("ServletContextHandler null");
+            LOGGER.warning("ServletContextHandler null");
             throw new NullPointerException("ServletContextHandler null");
         }
     }
