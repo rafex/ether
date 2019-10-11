@@ -17,9 +17,7 @@ public class Logger extends AbstractLogger {
     static {
         try {
             final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-//            return loader == null ? ClassLoader.getSystemResource(name) : loader.getResource(name);
             final InputStream inputStream = loader.getResourceAsStream(Logger.LOGGING_PROPERTIES);
-
             LogManager.getLogManager().readConfiguration(inputStream);
         } catch (SecurityException | IOException e) {
             e.printStackTrace();

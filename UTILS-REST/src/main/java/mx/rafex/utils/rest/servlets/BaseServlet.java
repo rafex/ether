@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,32 +13,13 @@ import org.eclipse.jetty.http.MimeTypes;
 
 import mx.rafex.utils.json.JsonUtils;
 
-public class ServletUtil {
+public abstract class BaseServlet extends HttpServlet {
 
-    private final static Logger LOGGER = Logger.getLogger(ServletUtil.class.getName());
+    private static final long serialVersionUID = 2964713457449758057L;
 
-    private ServletUtil() {
-    }
+    private final Logger LOGGER = Logger.getLogger(BaseServlet.class.getName());
 
-    public static String getBasePath(final Class<? extends HttpServlet> httpServlet) {
-        final String path = getBasePaths(httpServlet) != null && getBasePaths(httpServlet).length > 0 ? getBasePaths(httpServlet)[0] : null;
-        return path;
-    }
-
-    public static String[] getBasePaths(final Class<? extends HttpServlet> httpServlet) {
-        final WebServlet webServlet = httpServlet.getAnnotation(WebServlet.class);
-        String[] paths = null;
-
-        if (webServlet.value().length > 0) {
-            paths = webServlet.value();
-        }
-        if (webServlet.urlPatterns().length > 0) {
-            paths = webServlet.urlPatterns();
-        }
-        return paths;
-    }
-
-    public static <T> T requestAsObject(final HttpServletRequest request, final Class<T> clazz) {
+    public <T> T requestAsObject(final HttpServletRequest request, final Class<T> clazz) {
         if (request.getContentType() != null && MimeTypes.Type.APPLICATION_JSON.asString().contains(request.getContentType())
                 || MimeTypes.Type.APPLICATION_JSON.asString().equals(request.getContentType().trim())) {
             try {
@@ -52,13 +32,13 @@ public class ServletUtil {
                 final String payload = buffer.toString();
                 return JsonUtils.aJson(payload, clazz);
             } catch (final IOException ex) {
-                LOGGER.info(ex.getMessage());
+                LOGGER.warning(ex.getMessage());
             }
         }
         return null;
     }
 
-    public static void responseAsJson(final HttpServletResponse response, final Object obj) {
+    public void responseAsJson(final HttpServletResponse response, final Object obj) {
 
         response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
 
@@ -71,7 +51,7 @@ public class ServletUtil {
             out.flush();
 
         } catch (final IOException e) {
-            e.printStackTrace();
+            LOGGER.warning(e.getMessage());
         } finally {
             if (out != null) {
                 out.close();
@@ -80,8 +60,9 @@ public class ServletUtil {
 
     }
 
-    public static boolean validPath(final HttpServletRequest request) {
+    public boolean validPath(final HttpServletRequest request) {
         final String pathInfo = request.getPathInfo();
+        LOGGER.fine("Path info: " + pathInfo);
         return pathInfo == null || pathInfo.equals("/");
     }
 }

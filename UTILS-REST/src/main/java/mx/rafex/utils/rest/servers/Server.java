@@ -13,7 +13,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import mx.rafex.utils.rest.filters.CORSFilter;
-import mx.rafex.utils.rest.servlets.ServletUtil;
+import mx.rafex.utils.rest.servlets.UtilServlet;
 
 public class Server {
 
@@ -67,6 +67,9 @@ public class Server {
                 server.start();
                 server.join();
             }
+        } catch (final InterruptedException e) {
+            LOGGER.info("Error al unirse al server");
+            LOGGER.warning(e.getMessage());
         } catch (final Exception e) {
             LOGGER.warning(e.getMessage());
         }
@@ -96,7 +99,7 @@ public class Server {
 
     public void addServlet(final Class<? extends HttpServlet> httpServlet) {
         if (servletContextHandler != null) {
-            servletContextHandler.addServlet(httpServlet, ServletUtil.getBasePath(httpServlet));
+            servletContextHandler.addServlet(httpServlet, UtilServlet.getBasePath(httpServlet));
             LOGGER.info("Se agrego servlet: " + httpServlet);
         } else {
             LOGGER.warning("ServletContextHandler null");
