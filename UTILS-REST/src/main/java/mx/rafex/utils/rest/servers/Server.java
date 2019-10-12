@@ -47,7 +47,7 @@ public class Server {
         connector.setPort(port);
         connector.setHost(host);
         server.addConnector(connector);
-        servletContextHandler = new ServletContextHandler();
+        servletContextHandler = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
 
         final FilterHolder filter = new FilterHolder(new CORSFilter());
         filter.setName("CorsFilter");
@@ -60,7 +60,7 @@ public class Server {
 
     }
 
-    public void run() {
+    public void run() throws Exception {
         try {
             if (server != null) {
                 LOGGER.info("Server ejecutandose");
