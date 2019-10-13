@@ -26,8 +26,12 @@ public class BaseResponseDto implements Serializable {
         exception = builder.exception;
     }
 
+    public String getCode() {
+        return code;
+    }
+
     public String aJson() {
-        return JsonUtils.aJson(this);
+        return JsonUtils.aJsonExcludeFieldsWithoutExposeAnnotation(this);
     }
 
     @Override
