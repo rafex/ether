@@ -20,5 +20,8 @@ hs_err_pid*
 .sts*cache/
 .idea/
 
+.DS_Store
+
+
 
 
