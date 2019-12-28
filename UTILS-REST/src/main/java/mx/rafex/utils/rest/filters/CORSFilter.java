@@ -22,12 +22,13 @@ public class CORSFilter implements Filter {
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
      */
     @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain chain) throws IOException, ServletException {
+    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
+            final FilterChain chain) throws IOException, ServletException {
 
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
         final HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
+        this.LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
 
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
@@ -38,7 +39,7 @@ public class CORSFilter implements Filter {
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
-
+        this.LOGGER.info("CORS Activado");
     }
 
     @Override
