@@ -64,7 +64,9 @@
 
     <jetty.version>9.4.21.v20190926</jetty.version>
 
-    <asm.version>7.1</asm.version>		
+    <asm.version>7.1</asm.version>
+    
+    <commons-cli.version>1.4</commons-cli.version>
 
     <UTILS-JSON.version>1.0-SNAPSHOT</UTILS-JSON.version>
     <UTILS-REST.version>1.0-SNAPSHOT</UTILS-REST.version>
@@ -79,6 +81,8 @@
     <module>UTILS-REST</module>
 
     <module>UTILS-JDBC</module>
+    
+    <module>UTILS-CLI</module>
   </modules>
 
 </project>
