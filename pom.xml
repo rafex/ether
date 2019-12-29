@@ -67,6 +67,8 @@
     <asm.version>7.1</asm.version>
     
     <commons-cli.version>1.4</commons-cli.version>
+    
+    <commons-lang3.version>3.9</commons-lang3.version>
 
     <UTILS-JSON.version>1.0-SNAPSHOT</UTILS-JSON.version>
     <UTILS-REST.version>1.0-SNAPSHOT</UTILS-REST.version>
@@ -76,6 +78,8 @@
 
   <modules>
 
+    <module>UTILS-PROPERTIES</module>
+
     <module>UTILS-JSON</module>
 
     <module>UTILS-REST</module>
@@ -83,6 +87,7 @@
     <module>UTILS-JDBC</module>
     
     <module>UTILS-CLI</module>
+    
   </modules>
 
 </project>
