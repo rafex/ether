@@ -31,7 +31,7 @@ public final class CliDefault implements ICliDefault {
         options.addOption(OPTION_LOWERCASE_H, "help", false, "show help.");
         options.addOption(OPTION_LOWERCASE_V, "version", false, "shows the version.");
         options.addOption(OPTION_LOWERCASE_P, "properties", true, "select properties.");
-        options.addOption(OPTION_UPPERCASE_H, "host", false, "IP host.");
+        options.addOption(OPTION_UPPERCASE_H, "host", true, "IP host.");
         options.addOption(OPTION_UPPERCASE_P, "port", true, "port.");
         arguments(this.args);
     }
