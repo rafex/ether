@@ -1,4 +1,4 @@
-package mx.rafex.utils.object;
+package mx.rafex.utils.interfaces;
 
 import java.io.Serializable;
 

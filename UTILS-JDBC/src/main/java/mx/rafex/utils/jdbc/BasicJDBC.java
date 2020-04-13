@@ -1,8 +1,11 @@
 package mx.rafex.utils.jdbc;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 public interface BasicJDBC<EntityJDBC> {
+
+    Logger LOGGER = Logger.getLogger(BasicJDBC.class.getName());
 
     EntityJDBC create(EntityJDBC entity);
 
