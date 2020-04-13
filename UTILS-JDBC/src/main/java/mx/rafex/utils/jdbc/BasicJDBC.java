@@ -2,16 +2,16 @@ package mx.rafex.utils.jdbc;
 
 import java.util.List;
 
-public interface BasicJDBC<T> {
+public interface BasicJDBC<EntityJDBC> {
 
-    T create(T entity);
+    EntityJDBC create(EntityJDBC entity);
 
-    List<T> listAll();
+    List<EntityJDBC> listAll();
 
-    T find(Integer identificador);
+    EntityJDBC find(Integer identificador);
 
-    void delete(T entity);
+    void delete(EntityJDBC entity);
 
-    void update(T entity);
+    void update(EntityJDBC entity);
 
 }
