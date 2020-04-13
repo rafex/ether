@@ -77,6 +77,8 @@
   </properties>
 
   <modules>
+  
+    <module>UTILS-OBJECT</module>
 
     <module>UTILS-PROPERTIES</module>
 

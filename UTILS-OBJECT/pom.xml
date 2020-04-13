@@ -1,40 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
-		<artifactId>UTILS</artifactId>
 		<groupId>mx.rafex.utils</groupId>
+		<artifactId>UTILS</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>mx.rafex.utils.jdbc</groupId>
-	<artifactId>UTILS-JDBC</artifactId>
-	<version>1.1-SNAPSHOT</version>
-
+	<groupId>mx.rafex.utils.object</groupId>
+	<artifactId>UTILS-OBJECT</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
+	<url>https://rafex.dev</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>mx.rafex.utils.object</groupId>
-			<artifactId>UTILS-OBJECT</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
 
 	</dependencies>
 
 	<build>
+		<finalName>${project.name}</finalName>
 		<pluginManagement><!-- lock down plugins versions to avoid using Maven 
 				defaults (may be moved to parent pom) -->
 			<plugins>
@@ -51,6 +48,10 @@
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<optimize>true</optimize>
+						<debug>true</debug>
+					</configuration>
 					<dependencies>
 						<dependency>
 							<groupId>org.ow2.asm</groupId>

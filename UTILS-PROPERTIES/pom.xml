@@ -28,7 +28,11 @@
 	</properties>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>mx.rafex.utils.object</groupId>
+			<artifactId>UTILS-OBJECT</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
