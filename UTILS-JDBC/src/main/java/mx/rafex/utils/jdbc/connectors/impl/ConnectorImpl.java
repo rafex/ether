@@ -11,6 +11,9 @@ import mx.rafex.utils.jdbc.connectors.Connector;
 
 public class ConnectorImpl implements Connector {
 
+    private final static String ENVIRONMENT_DATABASE_PASSWORD = "JAVA_ENVIRONMENT_DATABASE_PASSWORD";
+    private final static String ENVIRONMENT_DATABASE_USER = "JAVA_ENVIRONMENT_DATABASE_USER";
+
     private final Logger LOGGER = Logger.getLogger(ConnectorImpl.class.getName());
 
     private static ConnectorImpl instance;
@@ -64,7 +67,7 @@ public class ConnectorImpl implements Connector {
     }
 
     @Override
-    public Connection get(final Properties properties) {
+    public Connection get(final Properties properties, final boolean environment) {
         try {
             final String className = properties.getProperty("className");
             Class.forName(className);
@@ -77,7 +80,12 @@ public class ConnectorImpl implements Connector {
         url.append(properties.getProperty("port"));
         url.append("/");
         url.append(properties.getProperty("database"));
-        getConnection(url, properties);
+
+        if (environment) {
+            getConnection(url, properties);
+        } else {
+            getConnection(url, System.getenv(ENVIRONMENT_DATABASE_USER), System.getenv(ENVIRONMENT_DATABASE_PASSWORD));
+        }
         return connection;
     }
 
