@@ -14,7 +14,7 @@
 	<groupId>mx.rafex.utils.object</groupId>
 	<artifactId>UTILS-OBJECT</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	
+
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<!-- FIXME change it to the project's website -->
@@ -28,7 +28,11 @@
 	</properties>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>mx.rafex.utils.json</groupId>
+			<artifactId>UTILS-JSON</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
