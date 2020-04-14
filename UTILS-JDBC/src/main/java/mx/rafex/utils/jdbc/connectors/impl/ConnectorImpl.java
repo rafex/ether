@@ -82,9 +82,9 @@ public class ConnectorImpl implements Connector {
         url.append(properties.getProperty("database"));
 
         if (environment) {
-            getConnection(url, properties);
-        } else {
             getConnection(url, System.getenv(ENVIRONMENT_DATABASE_USER), System.getenv(ENVIRONMENT_DATABASE_PASSWORD));
+        } else {
+            getConnection(url, properties);
         }
         return connection;
     }
