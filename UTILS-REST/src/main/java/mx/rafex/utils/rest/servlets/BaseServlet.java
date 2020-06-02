@@ -88,6 +88,32 @@ public abstract class BaseServlet extends HttpServlet {
 
     }
 
+    public void responseAsJson(final HttpServletResponse response, final Object obj) {
+
+        response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
+
+        try {
+            response.setStatus(Integer.valueOf(200));
+        } catch (NumberFormatException | NullPointerException e) {
+            LOGGER.warning(e.getMessage());
+        }
+
+        PrintWriter out = null;
+        try {
+            out = response.getWriter();
+            out.print(JsonUtils.aJsonExcludeFieldsWithoutExposeAnnotation(obj));
+            out.flush();
+
+        } catch (final IOException e) {
+            LOGGER.warning(e.getMessage());
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
+
+    }
+
     public boolean emptyPath(final HttpServletRequest request) {
         final String pathInfo = request.getPathInfo();
         LOGGER.fine("Path info: " + pathInfo);

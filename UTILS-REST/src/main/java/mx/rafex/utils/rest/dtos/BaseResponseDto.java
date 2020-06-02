@@ -1,6 +1,7 @@
 package mx.rafex.utils.rest.dtos;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import com.google.gson.annotations.Expose;
 
@@ -12,10 +13,13 @@ public class BaseResponseDto implements Serializable {
 
     @Expose
     private final String code;
+
     @Expose
     private final Object object;
+
     @Expose
     private final String message;
+
     @Expose
     private final String exception;
 
@@ -74,6 +78,11 @@ public class BaseResponseDto implements Serializable {
 
         public Builder object(final Object object) {
             this.object = object;
+            return this;
+        }
+
+        public Builder map(final Map<String, Object> map) {
+            object = map;
             return this;
         }
 

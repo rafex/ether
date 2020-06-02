@@ -14,7 +14,7 @@ public interface Connector {
 
     Connection get(Driver driver, String url);
 
-    Connection get(Properties properties);
+    Connection get(Properties properties, boolean environment);
 
     void close();
 }
