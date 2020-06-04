@@ -145,12 +145,25 @@ public class MailImpl implements Mail {
 		private static MailImpl instance;
 
 		public Builder() {
-			userName = System.getenv(ENVIRONMENT_MAIL_USER);
-			password = System.getenv(ENVIRONMENT_MAIL_PASSWORD);
+			if (System.getenv(ENVIRONMENT_MAIL_USER) != null) {
+				userName = System.getenv(ENVIRONMENT_MAIL_USER);
+			}
+
+			if (System.getenv(ENVIRONMENT_MAIL_PASSWORD) != null) {
+				password = System.getenv(ENVIRONMENT_MAIL_PASSWORD);
+			}
 		}
 
 		public Builder loadProperties(final Properties properties) {
 			this.properties = properties;
+
+			if (System.getenv(ENVIRONMENT_MAIL_USER) != null) {
+				this.properties.setProperty("user", System.getenv(ENVIRONMENT_MAIL_USER));
+			}
+
+			if (System.getenv(ENVIRONMENT_MAIL_PASSWORD) != null) {
+				this.properties.setProperty("password", System.getenv(ENVIRONMENT_MAIL_PASSWORD));
+			}
 			return this;
 		}
 
@@ -166,11 +179,17 @@ public class MailImpl implements Mail {
 
 		public Builder userName(final String userName) {
 			this.userName = userName;
+			if (System.getenv(ENVIRONMENT_MAIL_USER) != null) {
+				this.userName = System.getenv(ENVIRONMENT_MAIL_USER);
+			}
 			return this;
 		}
 
 		public Builder password(final String password) {
 			this.password = password;
+			if (System.getenv(ENVIRONMENT_MAIL_PASSWORD) != null) {
+				this.password = System.getenv(ENVIRONMENT_MAIL_PASSWORD);
+			}
 			return this;
 		}
 
