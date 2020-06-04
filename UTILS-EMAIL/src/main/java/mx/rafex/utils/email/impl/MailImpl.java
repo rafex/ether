@@ -59,7 +59,16 @@ public class MailImpl implements Mail {
 	}
 
 	@Override
+	public void send(final Properties properties) {
+		this.send(properties.getProperty("from"), properties.getProperty("to"), properties.getProperty("subject"),
+				properties.getProperty("message"));
+	}
+
+	@Override
 	public void send(final String from, final String to, final String subject, final String message) {
+
+		valid(from, to, subject, message);
+
 		final Properties prop = new Properties();
 		prop.put("mail.smtp.auth", true);
 		prop.put("mail.smtp.starttls.enable", "true");
@@ -98,6 +107,10 @@ public class MailImpl implements Mail {
 
 	@Override
 	public void send() {
+		this.send(from, to, subject, message);
+	}
+
+	private void valid(final String from, final String to, final String subject, final String message) {
 		if (from == null) {
 			throw new NullPointerException("From is null");
 		}
@@ -113,8 +126,6 @@ public class MailImpl implements Mail {
 		if (message == null) {
 			throw new NullPointerException("Message is null");
 		}
-
-		this.send(from, to, subject, message);
 	}
 
 	public static class Builder {
