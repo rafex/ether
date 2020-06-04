@@ -1,7 +1,5 @@
 package mx.rafex.utils.email;
 
-import java.util.Properties;
-
 public interface Mail {
 
 	void from(String from);
@@ -13,8 +11,6 @@ public interface Mail {
 	void message(String message);
 
 	void send(String from, String to, String subject, String message);
-
-	void send(Properties properties);
 
 	void send();
 

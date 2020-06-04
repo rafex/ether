@@ -24,6 +24,7 @@ public class MailImpl implements Mail {
 	private final Integer port;
 	private final String userName;
 	private final String password;
+	private final Properties properties;
 	private String message;
 	private String subject;
 	private String from;
@@ -31,10 +32,19 @@ public class MailImpl implements Mail {
 
 	private MailImpl(final Builder builder) {
 
-		host = builder.host;
-		port = builder.port;
-		userName = builder.userName;
-		password = builder.password;
+		properties = builder.properties;
+
+		if (properties != null) {
+			host = properties.getProperty("host");
+			port = Integer.valueOf(properties.getProperty("port"));
+			userName = properties.getProperty("user");
+			password = properties.getProperty("password");
+		} else {
+			host = builder.host;
+			port = builder.port;
+			userName = builder.userName;
+			password = builder.password;
+		}
 
 	}
 
@@ -56,12 +66,6 @@ public class MailImpl implements Mail {
 	@Override
 	public void message(final String message) {
 		this.message = message;
-	}
-
-	@Override
-	public void send(final Properties properties) {
-		this.send(properties.getProperty("from"), properties.getProperty("to"), properties.getProperty("subject"),
-				properties.getProperty("message"));
 	}
 
 	@Override
@@ -134,9 +138,20 @@ public class MailImpl implements Mail {
 		private Integer port;
 		private String userName;
 		private String password;
+		private Properties properties;
+		private final static String ENVIRONMENT_MAIL_PASSWORD = "JAVA_ENVIRONMENT_MAIL_PASSWORD";
+		private final static String ENVIRONMENT_MAIL_USER = "JAVA_ENVIRONMENT_MAIL_USER";
+
 		private static MailImpl instance;
 
 		public Builder() {
+			userName = System.getenv(ENVIRONMENT_MAIL_USER);
+			password = System.getenv(ENVIRONMENT_MAIL_PASSWORD);
+		}
+
+		public Builder loadProperties(final Properties properties) {
+			this.properties = properties;
+			return this;
 		}
 
 		public Builder host(final String host) {
