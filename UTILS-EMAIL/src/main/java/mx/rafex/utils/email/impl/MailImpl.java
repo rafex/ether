@@ -69,49 +69,12 @@ public class MailImpl implements Mail {
 	}
 
 	@Override
-	public void send(final String from, final String to, final String subject, final String message) {
+	public void build(final String from, final String to, final String subject, final String message) {
+		this.from = from;
+		this.to = to;
+		this.subject = subject;
+		this.message = message;
 
-		valid(from, to, subject, message);
-
-		final Properties prop = new Properties();
-		prop.put("mail.smtp.auth", true);
-		prop.put("mail.smtp.starttls.enable", "true");
-		prop.put("mail.smtp.host", host);
-		prop.put("mail.smtp.port", port);
-		prop.put("mail.smtp.ssl.trust", host);
-
-		final Session session = Session.getInstance(prop, new Authenticator() {
-			@Override
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(userName, password);
-			}
-		});
-
-		try {
-
-			final Message messageMail = new MimeMessage(session);
-			messageMail.setFrom(new InternetAddress(from));
-			messageMail.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-			messageMail.setSubject(subject);
-
-			final MimeBodyPart mimeBodyPart = new MimeBodyPart();
-			mimeBodyPart.setContent(message, "text/html");
-
-			final Multipart multipart = new MimeMultipart();
-			multipart.addBodyPart(mimeBodyPart);
-
-			messageMail.setContent(multipart);
-
-			Transport.send(messageMail);
-
-		} catch (final Exception e) {
-			LOGGER.warning(e.getMessage());
-		}
-	}
-
-	@Override
-	public void send() {
-		this.send(from, to, subject, message);
 	}
 
 	private void valid(final String from, final String to, final String subject, final String message) {
@@ -202,6 +165,47 @@ public class MailImpl implements Mail {
 				}
 			}
 			return instance;
+		}
+
+	}
+
+	@Override
+	public void run() {
+		valid(from, to, subject, message);
+
+		final Properties prop = new Properties();
+		prop.put("mail.smtp.auth", true);
+		prop.put("mail.smtp.starttls.enable", "true");
+		prop.put("mail.smtp.host", host);
+		prop.put("mail.smtp.port", port);
+		prop.put("mail.smtp.ssl.trust", host);
+
+		final Session session = Session.getInstance(prop, new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(userName, password);
+			}
+		});
+
+		try {
+
+			final Message messageMail = new MimeMessage(session);
+			messageMail.setFrom(new InternetAddress(from));
+			messageMail.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+			messageMail.setSubject(subject);
+
+			final MimeBodyPart mimeBodyPart = new MimeBodyPart();
+			mimeBodyPart.setContent(message, "text/html");
+
+			final Multipart multipart = new MimeMultipart();
+			multipart.addBodyPart(mimeBodyPart);
+
+			messageMail.setContent(multipart);
+
+			Transport.send(messageMail);
+
+		} catch (final Exception e) {
+			LOGGER.warning(e.getMessage());
 		}
 
 	}

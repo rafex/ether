@@ -1,6 +1,6 @@
 package mx.rafex.utils.email;
 
-public interface Mail {
+public interface Mail extends Runnable {
 
 	void from(String from);
 
@@ -10,8 +10,6 @@ public interface Mail {
 
 	void message(String message);
 
-	void send(String from, String to, String subject, String message);
-
-	void send();
+	void build(String from, String to, String subject, String message);
 
 }
