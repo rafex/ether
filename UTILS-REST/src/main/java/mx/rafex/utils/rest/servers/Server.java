@@ -126,8 +126,8 @@ public class Server {
 		public Builder() {
 			port = 8080;
 			host = "0.0.0.0";
-			maxThreads = 100;
-			minThreads = 10;
+			maxThreads = 500;
+			minThreads = 100;
 			idleTimeout = 3000;
 		}
 
