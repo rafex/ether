@@ -9,12 +9,15 @@ package mx.rafex.utils.cli;
  */
 public interface ICliDefault {
 
-    String OPTION_LOWERCASE_V = "v";
-    String OPTION_LOWERCASE_H = "h";
-    String OPTION_LOWERCASE_P = "p";
-    String OPTION_UPPERCASE_H = "H";
-    String OPTION_UPPERCASE_P = "P";
+	String OPTION_LOWERCASE_V = "v";
+	String OPTION_LOWERCASE_H = "h";
+	String OPTION_LOWERCASE_P = "p";
+	String OPTION_UPPERCASE_H = "H";
+	String OPTION_UPPERCASE_P = "P";
+	String OPTION_LOWERCASE_T = "t";
+	String OPTION_UPPERCASE_T = "T";
+	String OPTION_LOWERCASE_O = "o";
 
-    Object parse();
+	Object parse();
 
 }
