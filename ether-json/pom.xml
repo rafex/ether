@@ -182,15 +182,16 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
-		<artifactId>UTILS</artifactId>
-		<groupId>mx.rafex.utils</groupId>
-		<version>1.0.0-SNAPSHOT</version>
+		<groupId>dev.rafex.ether</groupId>
+		<artifactId>ether</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
-	<groupId>mx.rafex.utils.jdbc</groupId>
-	<artifactId>UTILS-JDBC</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<groupId>dev.rafex.ether.json</groupId>
+	<artifactId>ether-json</artifactId>
+	<version>1.0-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
@@ -207,16 +208,21 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>mx.rafex.utils.object</groupId>
-			<artifactId>UTILS-OBJECT</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${gson.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.everit.json</groupId>
+			<artifactId>org.everit.json.schema</artifactId>
+			<version>${org.everit.json.schema.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<finalName>${project.name}</finalName>
 		<plugins>
+			<!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 			</plugin>

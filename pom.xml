@@ -184,15 +184,15 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>mx.rafex.utils</groupId>
-	<artifactId>UTILS</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<groupId>dev.rafex.ether</groupId>
+	<artifactId>ether</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
-	<name>Rafex utils parent</name>
+	<name>ether</name>
 
-	<description>
-	   Utilidades para crear microservicios sin frameworks
+    <description>
+        utilities to create microservices without frameworks
     </description>
 
 	<url>https://rafex.dev</url>
@@ -234,13 +234,13 @@
 	</properties>
 
 	<modules>
-		<module>UTILS-OBJECT</module>
-		<module>UTILS-PROPERTIES</module>
-		<module>UTILS-JSON</module>
-		<module>UTILS-EMAIL</module>
-		<module>UTILS-REST</module>
-		<module>UTILS-JDBC</module>
-		<module>UTILS-CLI</module>
+		<module>ether-object</module>
+		<module>ether-properties</module>
+		<module>ether-json</module>
+		<module>ether-email</module>
+		<module>ether-rest</module>
+		<module>ether-jdbc</module>
+		<module>ether-cli</module>
 	</modules>
 
 	<build>

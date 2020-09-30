@@ -182,16 +182,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
-		<groupId>mx.rafex.utils</groupId>
-		<artifactId>UTILS</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<artifactId>ether</artifactId>
+		<groupId>dev.rafex.ether</groupId>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
-	<groupId>mx.rafex.utils.rest</groupId>
-	<artifactId>UTILS-REST</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<groupId>dev.rafex.ether.jdbc</groupId>
+	<artifactId>ether-jdbc</artifactId>
+	<version>1.1-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
@@ -208,26 +207,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>mx.rafex.utils.object</groupId>
-			<artifactId>UTILS-OBJECT</artifactId>
+			<groupId>dev.rafex.ether.object</groupId>
+			<artifactId>ether-object</artifactId>
 			<version>1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>mx.rafex.utils.json</groupId>
-			<artifactId>UTILS-JSON</artifactId>
-			<version>${UTILS-JSON.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>${jetty.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>${jetty.version}</version>
 		</dependency>
 
 	</dependencies>
@@ -235,7 +217,6 @@
 	<build>
 		<finalName>${project.name}</finalName>
 		<plugins>
-			<!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 			</plugin>
@@ -265,7 +246,6 @@
 			<plugin>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 			</plugin>
-			
 		</plugins>
 	</build>
 </project>

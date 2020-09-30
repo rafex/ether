@@ -184,13 +184,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>mx.rafex.utils</groupId>
-		<artifactId>UTILS</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<groupId>dev.rafex.ether</groupId>
+		<artifactId>ether</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
-	<groupId>mx.rafex.utils.json</groupId>
-	<artifactId>UTILS-JSON</artifactId>
+	<groupId>dev.rafex.ether.properties</groupId>
+	<artifactId>ether-properties</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
@@ -208,14 +208,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>${gson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.everit.json</groupId>
-			<artifactId>org.everit.json.schema</artifactId>
-			<version>${org.everit.json.schema.version}</version>
+			<groupId>dev.rafex.ether.object</groupId>
+			<artifactId>ether-object</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
