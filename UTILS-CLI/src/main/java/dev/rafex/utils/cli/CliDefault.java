@@ -175,53 +175,119 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package mx.rafex.utils.rest.filters;
+package dev.rafex.utils.cli;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.commons.lang3.math.NumberUtils;
 
-@WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
-public class CORSFilter implements Filter {
+import dev.rafex.utils.properties.Properties;
 
-    private final Logger LOGGER = Logger.getLogger(CORSFilter.class.getName());
+public final class CliDefault implements ICliDefault {
 
-    /**
-     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-     */
-    @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
-            final FilterChain chain) throws IOException, ServletException {
+	private final Logger LOGGER = Logger.getLogger(CliDefault.class.getName());
 
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final HttpServletResponse response = (HttpServletResponse) servletResponse;
+	private static CliDefault instance;
 
-        this.LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
+	protected String[] args = null;
+	protected final Options options = new Options();
+	protected final CommandLineParser parser = new DefaultParser();
+	protected final Map<String, Object> optionsMap = new HashMap<>();
 
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+	private CliDefault(final String[] args) {
+		this.args = args;
+		options.addOption(OPTION_LOWERCASE_H, "help", false, "show help.");
+		options.addOption(OPTION_LOWERCASE_V, "version", false, "shows the version.");
+		options.addOption(OPTION_LOWERCASE_P, "properties", true, "select properties.");
+		options.addOption(OPTION_UPPERCASE_H, "host", true, "select IP host.");
+		options.addOption(OPTION_UPPERCASE_P, "port", true, "select port.");
+		options.addOption(OPTION_LOWERCASE_T, "minThreads", true, "min Threads.");
+		options.addOption(OPTION_UPPERCASE_T, "maxThreads", true, "max Threads.");
+		arguments(this.args);
+	}
 
-        chain.doFilter(request, response);
-    }
+	public static CliDefault getInstance(final String[] args) {
+		if (instance == null) {
+			synchronized (CliDefault.class) {
+				if (instance == null) {
+					instance = new CliDefault(args);
+				}
+			}
+		}
+		return instance;
+	}
 
-    @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        this.LOGGER.info("CORS Activado");
-    }
+	@Override
+	public ValuesCli parse() {
+		CommandLine cmd = null;
+		try {
+			final ValuesCli valuesCli = new ValuesCli();
+			cmd = parser.parse(options, args);
 
-    @Override
-    public void destroy() {
+			if (cmd.hasOption(OPTION_LOWERCASE_H)) {
+				help();
+			}
 
-    }
+			if (cmd.hasOption(OPTION_LOWERCASE_V)) {
+				System.out.println("Version: " + Properties.getProperty("app.version"));
+				help();
+			}
+
+			if (cmd.hasOption(OPTION_LOWERCASE_P)) {
+				Properties.loadProperties(cmd.getOptionValue("p"));
+			}
+
+			if (cmd.hasOption(OPTION_UPPERCASE_P)) {
+				valuesCli.setPort(NumberUtils.toInt(cmd.getOptionValue(OPTION_UPPERCASE_P, "8080")));
+			}
+
+			if (cmd.hasOption(OPTION_LOWERCASE_T)) {
+				valuesCli.setPort(NumberUtils.toInt(cmd.getOptionValue(OPTION_LOWERCASE_T, "200")));
+			}
+
+			if (cmd.hasOption(OPTION_UPPERCASE_T)) {
+				valuesCli.setPort(NumberUtils.toInt(cmd.getOptionValue(OPTION_UPPERCASE_T, "50")));
+			}
+
+			if (cmd.hasOption(OPTION_LOWERCASE_O)) {
+				valuesCli.setPort(NumberUtils.toInt(cmd.getOptionValue(OPTION_LOWERCASE_O, "3000")));
+			}
+
+			if (cmd.hasOption(OPTION_UPPERCASE_H)) {
+				valuesCli.setHost(cmd.getOptionValue(OPTION_UPPERCASE_H, "0.0.0.0"));
+			}
+
+			return valuesCli;
+		} catch (final UnrecognizedOptionException ex) {
+			LOGGER.severe("Failed ");
+		} catch (final ParseException ex) {
+			LOGGER.info("Failed to parse comand line properties");
+			help();
+		}
+		return null;
+	}
+
+	protected void help() {
+		final HelpFormatter formater = new HelpFormatter();
+		formater.printHelp("Main", options);
+		System.exit(0);
+	}
+
+	private void arguments(final String[] args) {
+		if (args != null) {
+			for (int i = 0; i < args.length; i++) {
+				LOGGER.info("Argument: [" + i + "][" + args[i] + "]");
+			}
+		}
+	}
 
 }

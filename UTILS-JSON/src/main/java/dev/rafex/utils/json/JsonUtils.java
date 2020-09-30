@@ -175,53 +175,51 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package mx.rafex.utils.rest.filters;
+package dev.rafex.utils.json;
 
-import java.io.IOException;
-import java.util.logging.Logger;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.loader.SchemaLoader;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-@WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
-public class CORSFilter implements Filter {
+public final class JsonUtils {
 
-    private final Logger LOGGER = Logger.getLogger(CORSFilter.class.getName());
-
-    /**
-     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-     */
-    @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
-            final FilterChain chain) throws IOException, ServletException {
-
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        this.LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-
-        chain.doFilter(request, response);
+    private JsonUtils() {
     }
 
-    @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        this.LOGGER.info("CORS Activado");
+    public static Gson obtenerConvertidorJson(final GsonBuilder builder, final boolean serializeNulls) {
+
+        if (serializeNulls) {
+            builder.serializeNulls();
+        }
+
+        return builder.create();
     }
 
-    @Override
-    public void destroy() {
+    public static Gson obtenerConvertidorJson() {
+        return obtenerConvertidorJson(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping(), false);
+    }
 
+    public static <T> T aJson(final String json, final Class<T> clazz) {
+        return JsonUtils.obtenerConvertidorJson().fromJson(json, clazz);
+    }
+
+    public static String aJson(final Object object) {
+        return JsonUtils.obtenerConvertidorJson().toJson(object);
+    }
+
+    public static String aJsonExcludeFieldsWithoutExposeAnnotation(final Object object) {
+        return JsonUtils.obtenerConvertidorJson(new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().disableHtmlEscaping(), false).toJson(object);
+    }
+
+    public static void validarJson(final String esquemaJson, final String json, final Class<?> clazz) {
+        final JSONObject jsonSchema = new JSONObject(new JSONTokener(clazz.getResourceAsStream(esquemaJson)));
+        final JSONObject jsonSubject = new JSONObject(new JSONTokener(json));
+        final Schema schema = SchemaLoader.load(jsonSchema);
+        schema.validate(jsonSubject);
     }
 
 }

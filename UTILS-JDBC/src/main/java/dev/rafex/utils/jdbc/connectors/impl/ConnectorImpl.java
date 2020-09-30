@@ -175,53 +175,136 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package mx.rafex.utils.rest.filters;
+package dev.rafex.utils.jdbc.connectors.impl;
 
-import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import dev.rafex.utils.jdbc.connectors.Connector;
 
-@WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
-public class CORSFilter implements Filter {
+public class ConnectorImpl implements Connector {
 
-    private final Logger LOGGER = Logger.getLogger(CORSFilter.class.getName());
+    private final static String ENVIRONMENT_DATABASE_PASSWORD = "JAVA_ENVIRONMENT_DATABASE_PASSWORD";
+    private final static String ENVIRONMENT_DATABASE_USER = "JAVA_ENVIRONMENT_DATABASE_USER";
 
-    /**
-     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-     */
-    @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
-            final FilterChain chain) throws IOException, ServletException {
+    private final Logger LOGGER = Logger.getLogger(ConnectorImpl.class.getName());
 
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final HttpServletResponse response = (HttpServletResponse) servletResponse;
+    private static ConnectorImpl instance;
+    private Connection connection;
 
-        this.LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
+    private ConnectorImpl() {
+    }
 
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-
-        chain.doFilter(request, response);
+    public static ConnectorImpl getInstance() {
+        if (instance == null) {
+            synchronized (ConnectorImpl.class) {
+                if (instance == null) {
+                    instance = new ConnectorImpl();
+                }
+            }
+        }
+        return instance;
     }
 
     @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        this.LOGGER.info("CORS Activado");
+    public Connection get(final Driver driver, final String url, final String user, final String password) {
+        try {
+            DriverManager.registerDriver(driver);
+        } catch (final SQLException e) {
+            LOGGER.warning(e.getMessage());
+        }
+        getConnection(new StringBuilder(url), user, password);
+
+        return connection;
     }
 
     @Override
-    public void destroy() {
+    public Connection get(final Driver driver, final String url) {
+        return get(driver, url, null, null);
+    }
 
+    @Override
+    public Connection get(final String className, final String url, final String user, final String password) {
+        try {
+            Class.forName(className);
+        } catch (final ClassNotFoundException e) {
+            LOGGER.warning(e.getMessage());
+        }
+        getConnection(new StringBuilder(url), user, password);
+        return connection;
+    }
+
+    @Override
+    public Connection get(final String className, final String url) {
+        return get(className, url, null, null);
+    }
+
+    @Override
+    public Connection get(final Properties properties, final boolean environment) {
+        try {
+            final String className = properties.getProperty("className");
+            Class.forName(className);
+        } catch (final ClassNotFoundException e) {
+            LOGGER.warning(e.getMessage());
+        }
+        final StringBuilder url = new StringBuilder("jdbc:");
+        url.append(properties.getProperty("url"));
+        url.append(":");
+        url.append(properties.getProperty("port"));
+        url.append("/");
+        url.append(properties.getProperty("database"));
+
+        if (environment) {
+            getConnection(url, System.getenv(ENVIRONMENT_DATABASE_USER), System.getenv(ENVIRONMENT_DATABASE_PASSWORD));
+        } else {
+            getConnection(url, properties);
+        }
+        return connection;
+    }
+
+    @Override
+    public void close() {
+        try {
+            if (connection != null) {
+                connection.close();
+                System.out.println("Connection closed !!");
+            }
+        } catch (final SQLException e) {
+            LOGGER.warning(e.getMessage());
+        } catch (final Exception e) {
+            LOGGER.warning(e.getMessage());
+        }
+    }
+
+    private void getConnection(final StringBuilder url, final String user, final String password) {
+        try {
+            if (user == null && password == null) {
+                connection = DriverManager.getConnection(url.toString());
+            } else {
+                final Properties properties = new Properties();
+                properties.setProperty("user", user);
+                properties.setProperty("password", password);
+                getConnection(url, properties);
+            }
+        } catch (final SQLException e) {
+            LOGGER.warning(String.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage()));
+            close();
+        } catch (final Exception e) {
+            LOGGER.warning(e.getMessage());
+            close();
+        }
+    }
+
+    private void getConnection(final StringBuilder url, final Properties properties) {
+        try {
+            connection = DriverManager.getConnection(url.toString(), properties);
+        } catch (final SQLException e) {
+            LOGGER.warning(String.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage()));
+        }
     }
 
 }

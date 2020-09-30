@@ -175,53 +175,44 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package mx.rafex.utils.rest.filters;
+package dev.rafex.utils.jdbc.properties;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public final class JDBCProperties {
 
-@WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
-public class CORSFilter implements Filter {
+    private static final Logger LOGGER = Logger.getLogger(JDBCProperties.class.getName());
 
-    private final Logger LOGGER = Logger.getLogger(CORSFilter.class.getName());
-
-    /**
-     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-     */
-    @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
-            final FilterChain chain) throws IOException, ServletException {
-
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        this.LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-
-        chain.doFilter(request, response);
+    static {
+        try {
+            JDBCProperties.loadProperties(JDBCProperties.JDBC_PROPERTIES, JDBCProperties.PROPERTIES);
+        } catch (final SecurityException e) {
+            LOGGER.warning(e.getMessage());
+        }
     }
 
-    @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        this.LOGGER.info("CORS Activado");
-    }
+    public static final String JDBC_PROPERTIES = "jdbc.properties";
+    public static Properties PROPERTIES;
 
-    @Override
-    public void destroy() {
+    private JDBCProperties() {
 
     }
 
+    static void loadProperties(final String resourceName, final Properties props) {
+        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        final URL testProps = loader.getResource(resourceName);
+        if (testProps != null) {
+            try (InputStream in = testProps.openStream()) {
+                JDBCProperties.PROPERTIES = new Properties();
+                JDBCProperties.PROPERTIES.load(in);
+            } catch (final IOException e) {
+                LOGGER.warning("[WARN] Error loading logging config: " + testProps);
+                e.printStackTrace();
+            }
+        }
+    }
 }

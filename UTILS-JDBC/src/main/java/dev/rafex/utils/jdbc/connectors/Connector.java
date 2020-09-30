@@ -175,53 +175,23 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package mx.rafex.utils.rest.filters;
+package dev.rafex.utils.jdbc.connectors;
 
-import java.io.IOException;
-import java.util.logging.Logger;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.util.Properties;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public interface Connector {
 
-@WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
-public class CORSFilter implements Filter {
+    Connection get(String className, String url, String user, String password);
 
-    private final Logger LOGGER = Logger.getLogger(CORSFilter.class.getName());
+    Connection get(String className, String url);
 
-    /**
-     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-     */
-    @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
-            final FilterChain chain) throws IOException, ServletException {
+    Connection get(Driver driver, String url, String user, String password);
 
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final HttpServletResponse response = (HttpServletResponse) servletResponse;
+    Connection get(Driver driver, String url);
 
-        this.LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
+    Connection get(Properties properties, boolean environment);
 
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-
-        chain.doFilter(request, response);
-    }
-
-    @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        this.LOGGER.info("CORS Activado");
-    }
-
-    @Override
-    public void destroy() {
-
-    }
-
+    void close();
 }

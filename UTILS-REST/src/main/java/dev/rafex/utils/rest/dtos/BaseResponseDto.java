@@ -175,53 +175,97 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package mx.rafex.utils.rest.filters;
+package dev.rafex.utils.rest.dtos;
 
-import java.io.IOException;
-import java.util.logging.Logger;
+import java.io.Serializable;
+import java.util.Map;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.google.gson.annotations.Expose;
 
-@WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
-public class CORSFilter implements Filter {
+import dev.rafex.utils.json.JsonUtils;
 
-    private final Logger LOGGER = Logger.getLogger(CORSFilter.class.getName());
+public class BaseResponseDto implements Serializable {
 
-    /**
-     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-     */
-    @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
-            final FilterChain chain) throws IOException, ServletException {
+    private static final long serialVersionUID = 8023644832677222940L;
 
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final HttpServletResponse response = (HttpServletResponse) servletResponse;
+    @Expose
+    private final String code;
 
-        this.LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
+    @Expose
+    private final Object object;
 
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+    @Expose
+    private final String message;
 
-        chain.doFilter(request, response);
+    @Expose
+    private final String exception;
+
+    private BaseResponseDto(final Builder builder) {
+        code = builder.code;
+        object = builder.object;
+        message = builder.message;
+        exception = builder.exception;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String aJson() {
+        return JsonUtils.aJsonExcludeFieldsWithoutExposeAnnotation(this);
     }
 
     @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        this.LOGGER.info("CORS Activado");
+    public String toString() {
+        return aJson();
     }
 
-    @Override
-    public void destroy() {
+    public static class Builder {
+        private String code;
+        private Object object;
+        private String message;
+        private String exception;
 
+        public Builder() {
+            code = "200";
+        }
+
+        public Builder message(final String message) {
+            this.message = message;
+            return this;
+        }
+
+        public Builder exception(final String exception) {
+            this.exception = exception;
+            return this;
+        }
+
+        public Builder code(final String code) {
+            this.code = code;
+            return this;
+        }
+
+        public Builder code(final Integer code) {
+            this.code = code.toString();
+            if (code.intValue() == 200) {
+                message = "successful";
+            }
+            return this;
+        }
+
+        public Builder object(final Object object) {
+            this.object = object;
+            return this;
+        }
+
+        public Builder map(final Map<String, Object> map) {
+            object = map;
+            return this;
+        }
+
+        public BaseResponseDto build() {
+            return new BaseResponseDto(this);
+        }
     }
 
 }

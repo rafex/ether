@@ -175,53 +175,84 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package mx.rafex.utils.rest.filters;
+package dev.rafex.utils.cli;
 
-import java.io.IOException;
-import java.util.logging.Logger;
+public final class ValuesCli {
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+	private int port = 8080;
+	private String host = "0.0.0.0";
+	private int maxThreads = 200;
+	private int minThreads = 50;
+	private int idleTimeout = 3000;
 
-@WebFilter(filterName = "CORSFilter", urlPatterns = { "/*" })
-public class CORSFilter implements Filter {
+	/**
+	 * @return the port
+	 */
+	public int getPort() {
+		return port;
+	}
 
-    private final Logger LOGGER = Logger.getLogger(CORSFilter.class.getName());
+	/**
+	 * @param port the port to set
+	 */
+	public void setPort(final int port) {
+		this.port = port;
+	}
 
-    /**
-     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-     */
-    @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
-            final FilterChain chain) throws IOException, ServletException {
+	/**
+	 * @return the host
+	 */
+	public String getHost() {
+		return host;
+	}
 
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final HttpServletResponse response = (HttpServletResponse) servletResponse;
+	/**
+	 * @param host the host to set
+	 */
+	public void setHost(final String host) {
+		this.host = host;
+	}
 
-        this.LOGGER.info("CORSFilter HTTP Request: " + request.getMethod());
+	/**
+	 * @return the maxThreads
+	 */
+	public int getMaxThreads() {
+		return maxThreads;
+	}
 
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, DELETE, PUT, POST");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+	/**
+	 * @param maxThreads the maxThreads to set
+	 */
+	public void setMaxThreads(final int maxThreads) {
+		this.maxThreads = maxThreads;
+	}
 
-        chain.doFilter(request, response);
-    }
+	/**
+	 * @return the minThreads
+	 */
+	public int getMinThreads() {
+		return minThreads;
+	}
 
-    @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        this.LOGGER.info("CORS Activado");
-    }
+	/**
+	 * @param minThreads the minThreads to set
+	 */
+	public void setMinThreads(final int minThreads) {
+		this.minThreads = minThreads;
+	}
 
-    @Override
-    public void destroy() {
+	/**
+	 * @return the idleTimeout
+	 */
+	public int getIdleTimeout() {
+		return idleTimeout;
+	}
 
-    }
+	/**
+	 * @param idleTimeout the idleTimeout to set
+	 */
+	public void setIdleTimeout(final int idleTimeout) {
+		this.idleTimeout = idleTimeout;
+	}
 
 }
