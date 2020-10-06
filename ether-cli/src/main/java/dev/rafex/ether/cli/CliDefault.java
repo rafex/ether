@@ -177,18 +177,7 @@
  */
 package dev.rafex.ether.cli;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.UnrecognizedOptionException;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import dev.rafex.ether.properties.Properties;
 
@@ -196,90 +185,104 @@ public final class CliDefault implements ICliDefault {
 
 	private final Logger LOGGER = Logger.getLogger(CliDefault.class.getName());
 
-	private static CliDefault instance;
+	private static CliDefault INSTANCE;
 
 	protected String[] args = null;
-	protected final Options options = new Options();
-	protected final CommandLineParser parser = new DefaultParser();
-	protected final Map<String, Object> optionsMap = new HashMap<>();
 
 	private CliDefault(final String[] args) {
 		this.args = args;
-		options.addOption(OPTION_LOWERCASE_H, "help", false, "show help.");
-		options.addOption(OPTION_LOWERCASE_V, "version", false, "shows the version.");
-		options.addOption(OPTION_LOWERCASE_P, "properties", true, "select properties.");
-		options.addOption(OPTION_UPPERCASE_H, "host", true, "select IP host.");
-		options.addOption(OPTION_UPPERCASE_P, "port", true, "select port.");
-		options.addOption(OPTION_LOWERCASE_T, "minThreads", true, "min Threads.");
-		options.addOption(OPTION_UPPERCASE_T, "maxThreads", true, "max Threads.");
 		arguments(this.args);
 	}
 
 	public static CliDefault getInstance(final String[] args) {
-		if (instance == null) {
+		if (INSTANCE == null) {
 			synchronized (CliDefault.class) {
-				if (instance == null) {
-					instance = new CliDefault(args);
+				if (INSTANCE == null) {
+					INSTANCE = new CliDefault(args);
 				}
 			}
 		}
-		return instance;
+		return INSTANCE;
 	}
 
 	@Override
-	public ValuesCli parse() {
-		CommandLine cmd = null;
+	public Values parse() {
+		final Values values = new Values();
 		try {
-			final ValuesCli valuesCli = new ValuesCli();
-			cmd = parser.parse(options, args);
 
-			if (cmd.hasOption(OPTION_LOWERCASE_H)) {
-				help();
+			for (int index = 0; index < args.length; index++) {
+				if (index % 2 == 0) {
+					switch (fixArgument(args[index])) {
+					case PROPERTIES:
+						Properties.loadProperties(getValue(args, index));
+						break;
+					case PORT:
+						System.err.println("Port");
+						values.setPort(Integer.valueOf(getValue(args, index)));
+						break;
+					case HOST:
+						System.err.println("Host");
+						values.setHost(getValue(args, index));
+						break;
+					case MAX_THREADS:
+						System.err.println("Max Threads");
+						values.setMaxThreads(Integer.valueOf(getValue(args, index)));
+						break;
+					case MIN_THREADS:
+						System.err.println("Min Threads");
+						values.setMinThreads(Integer.valueOf(getValue(args, index)));
+						break;
+					case IDLE_TIMEOUT:
+						System.err.println("Idle Timeout");
+						values.setIdleTimeout(Integer.valueOf(getValue(args, index)));
+						break;
+					case VERSION:
+						System.out.println("Version: " + Properties.getProperty("app.version"));
+						break;
+					case HELP:
+						help();
+						break;
+					default:
+						help();
+						break;
+					}
+				}
 			}
 
-			if (cmd.hasOption(OPTION_LOWERCASE_V)) {
-				System.out.println("Version: " + Properties.getProperty("app.version"));
-				help();
-			}
-
-			if (cmd.hasOption(OPTION_LOWERCASE_P)) {
-				Properties.loadProperties(cmd.getOptionValue("p"));
-			}
-
-			if (cmd.hasOption(OPTION_UPPERCASE_P)) {
-				valuesCli.setPort(NumberUtils.toInt(cmd.getOptionValue(OPTION_UPPERCASE_P, "8080")));
-			}
-
-			if (cmd.hasOption(OPTION_LOWERCASE_T)) {
-				valuesCli.setPort(NumberUtils.toInt(cmd.getOptionValue(OPTION_LOWERCASE_T, "200")));
-			}
-
-			if (cmd.hasOption(OPTION_UPPERCASE_T)) {
-				valuesCli.setPort(NumberUtils.toInt(cmd.getOptionValue(OPTION_UPPERCASE_T, "50")));
-			}
-
-			if (cmd.hasOption(OPTION_LOWERCASE_O)) {
-				valuesCli.setPort(NumberUtils.toInt(cmd.getOptionValue(OPTION_LOWERCASE_O, "3000")));
-			}
-
-			if (cmd.hasOption(OPTION_UPPERCASE_H)) {
-				valuesCli.setHost(cmd.getOptionValue(OPTION_UPPERCASE_H, "0.0.0.0"));
-			}
-
-			return valuesCli;
-		} catch (final UnrecognizedOptionException ex) {
-			LOGGER.severe("Failed ");
-		} catch (final ParseException ex) {
-			LOGGER.info("Failed to parse comand line properties");
+		} catch (final ArrayIndexOutOfBoundsException | NullPointerException e) {
 			help();
+			return null;
+		}
+
+		return values;
+	}
+
+	protected void help() {
+		System.out.println("Help");
+		for (final Options option : Options.values()) {
+			System.out.println("[" + option.name() + "]\n \t" + option.getArgument() + " -- " + option.getResumen());
+		}
+		System.exit(0);
+	}
+
+	private String getValue(final String[] values, final int index) {
+		if (values != null && index < values.length && index + 1 <= values.length) {
+			return values[index + 1];
 		}
 		return null;
 	}
 
-	protected void help() {
-		final HelpFormatter formater = new HelpFormatter();
-		formater.printHelp("Main", options);
-		System.exit(0);
+	private Options fixArgument(final String argument) {
+
+		if (argument != null && !argument.isBlank()) {
+			if (argument.contains("-")) {
+				return Options.findByType(argument.replace("-", ""));
+			} else {
+				return Options.findByType(argument);
+			}
+		}
+
+		return null;
 	}
 
 	private void arguments(final String[] args) {
