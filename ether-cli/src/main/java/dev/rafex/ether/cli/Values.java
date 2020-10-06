@@ -177,26 +177,28 @@
  */
 package dev.rafex.ether.cli;
 
-public final class ValuesCli {
+public final class Values {
 
-	private int port = 8080;
+	private Integer port = 8080;
 	private String host = "0.0.0.0";
-	private int maxThreads = 200;
-	private int minThreads = 50;
-	private int idleTimeout = 3000;
+	private Integer maxThreads = 200;
+	private Integer minThreads = 50;
+	private Integer idleTimeout = 3000;
 
 	/**
 	 * @return the port
 	 */
-	public int getPort() {
+	public Integer getPort() {
 		return port;
 	}
 
 	/**
 	 * @param port the port to set
 	 */
-	public void setPort(final int port) {
-		this.port = port;
+	public void setPort(final Integer port) {
+		if (port != null && port > 0) {
+			this.port = port;
+		}
 	}
 
 	/**
@@ -210,49 +212,74 @@ public final class ValuesCli {
 	 * @param host the host to set
 	 */
 	public void setHost(final String host) {
-		this.host = host;
+		if (host != null) {
+			this.host = host;
+		}
 	}
 
 	/**
 	 * @return the maxThreads
 	 */
-	public int getMaxThreads() {
+	public Integer getMaxThreads() {
 		return maxThreads;
 	}
 
 	/**
 	 * @param maxThreads the maxThreads to set
 	 */
-	public void setMaxThreads(final int maxThreads) {
-		this.maxThreads = maxThreads;
+	public void setMaxThreads(final Integer maxThreads) {
+		if (maxThreads != null) {
+			this.maxThreads = maxThreads;
+		}
 	}
 
 	/**
 	 * @return the minThreads
 	 */
-	public int getMinThreads() {
+	public Integer getMinThreads() {
 		return minThreads;
 	}
 
 	/**
 	 * @param minThreads the minThreads to set
 	 */
-	public void setMinThreads(final int minThreads) {
-		this.minThreads = minThreads;
+	public void setMinThreads(final Integer minThreads) {
+		if (minThreads != null) {
+			this.minThreads = minThreads;
+		}
 	}
 
 	/**
 	 * @return the idleTimeout
 	 */
-	public int getIdleTimeout() {
+	public Integer getIdleTimeout() {
 		return idleTimeout;
 	}
 
 	/**
 	 * @param idleTimeout the idleTimeout to set
 	 */
-	public void setIdleTimeout(final int idleTimeout) {
-		this.idleTimeout = idleTimeout;
+	public void setIdleTimeout(final Integer idleTimeout) {
+		if (idleTimeout != null) {
+			this.idleTimeout = idleTimeout;
+		}
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("Values [port=");
+		builder.append(port);
+		builder.append(", host=");
+		builder.append(host);
+		builder.append(", maxThreads=");
+		builder.append(maxThreads);
+		builder.append(", minThreads=");
+		builder.append(minThreads);
+		builder.append(", idleTimeout=");
+		builder.append(idleTimeout);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }
