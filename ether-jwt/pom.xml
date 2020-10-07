@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright (C) August 2019 Raúl Eduardo González Argote - rafex@rafex.dev 
 	This program is free software: you can redistribute it and/or modify it under 
 	the terms of the GNU LESSER GENERAL PUBLIC LICENSE as published by the Free 
@@ -104,22 +104,26 @@
 	for the Library. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>ether</artifactId>
+		<groupId>dev.rafex.ether</groupId>
+		<version>1.0.0.0-v20201006</version>
+	</parent>
 
-	<groupId>dev.rafex.ether</groupId>
-	<artifactId>ether</artifactId>
-	<version>1.0.0.0-v20201006</version>
+	<groupId>dev.rafex.ether.jwt</groupId>
+	<artifactId>ether-jwt</artifactId>
+	<version>1.0.1-v20201006</version>
 
-	<packaging>pom</packaging>
-	<name>ether</name>
+	<packaging>jar</packaging>
+	<name>${project.artifactId}</name>
+
+	<url>https://rafex.dev/ether/jwt</url>
 
 	<description>
         utilities to create microservices without frameworks
     </description>
-
-	<url>https://rafex.dev/ether</url>
 
 	<licenses>
 		<license>
@@ -155,193 +159,72 @@
 	</distributionManagement>
 
 	<properties>
-		<owner.name>Raúl Eduardo González Argote</owner.name>
-		<owner.email>rafex@rafex.dev</owner.email>
-
-		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
-		<maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
-		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-		<maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
-		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
-		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-		<maven-site-plugin.version>3.8.2</maven-site-plugin.version>
-		<maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-		<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
-		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-		<nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
-		<maven-release-plugin.version>3.0.0-M1</maven-release-plugin.version>
-
-		<license-maven-plugin.version>3.0</license-maven-plugin.version>
-
-		<slf4j.version>1.7.28</slf4j.version>
-		<gson.version>2.8.5</gson.version>
-		<org.everit.json.schema.version>1.5.1</org.everit.json.schema.version>
-		<jetty.version>9.4.32.v20200930</jetty.version>
-		<asm.version>7.1</asm.version>
-		<commons-lang3.version>3.9</commons-lang3.version>
-		<javax.mail.version>1.6.2</javax.mail.version>
-		
-		<rest.version>1.0.1-v20201006</rest.version>
-		<properties.version>1.0.1-v20201006</properties.version>
-		<object.version>1.0.1-v20201006</object.version>
-		<json.version>1.0.1-v20201006</json.version>
-		<jdbc.version>1.0.1-v20201006</jdbc.version>
-		<email.version>1.0.1-v20201006</email.version>
-		<cli.version>1.0.1-v20201006</cli.version>
-
 	</properties>
 
-	<modules>
-		<module>ether-object</module>
-		<module>ether-properties</module>
-		<module>ether-json</module>
-		<module>ether-email</module>
-		<module>ether-jdbc</module>
-		<module>ether-cli</module>
-        <module>ether-rest</module>
-<!--         <module>ether-jwt</module> -->
-	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${gson.version}</version>
+		</dependency>
+	</dependencies>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.sonatype.plugins</groupId>
-					<artifactId>nexus-staging-maven-plugin</artifactId>
-					<version>${nexus-staging-maven-plugin.version}</version>
-					<extensions>true</extensions>
-					<configuration>
-						<serverId>ossrh</serverId>
-						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-						<autoReleaseAfterClose>true</autoReleaseAfterClose>
-					</configuration>
-				</plugin>
-				<plugin>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>${maven-clean-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>${maven-resources-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>${maven-compiler-plugin.version}</version>
-					<configuration>
-						<optimize>true</optimize>
-						<debug>true</debug>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>org.ow2.asm</groupId>
-							<artifactId>asm</artifactId>
-							<version>${asm.version}</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-				<plugin>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>${maven-surefire-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>${maven-jar-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-install-plugin</artifactId>
-					<version>${maven-install-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>${maven-deploy-plugin.version}</version>
-				</plugin>
-				<!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
-				<plugin>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>${maven-site-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-project-info-reports-plugin</artifactId>
-					<version>${maven-project-info-reports-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>${maven-source-plugin.version}</version>
-					<executions>
-						<execution>
-							<id>attach-sources</id>
-							<goals>
-								<goal>jar-no-fork</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>${maven-javadoc-plugin.version}</version>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-gpg-plugin</artifactId>
-					<version>${maven-gpg-plugin.version}</version>
-					<executions>
-						<execution>
-							<id>sign-artifacts</id>
-							<phase>verify</phase>
-							<goals>
-								<goal>sign</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>com.mycila</groupId>
-					<artifactId>license-maven-plugin</artifactId>
-					<version>${license-maven-plugin.version}</version>
-					<configuration>
-						<header>LICENSE</header>
-						<properties>
-							<owner>${owner.name}</owner>
-							<email>${owner.email}</email>
-						</properties>
-						<excludes>
-							<exclude>README.md</exclude>
-							<exclude>**/target/</exclude>
-							<exclude>**/src/main/resources</exclude>
-						</excludes>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>check</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+		<finalName>${project.name}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+			</plugin>
+			<!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-install-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+			</plugin>
+			<!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+			<plugin>
+				<artifactId>maven-site-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-gpg-plugin</artifactId>
+			</plugin>
+		</plugins>
 	</build>
-
 </project>
