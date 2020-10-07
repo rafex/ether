@@ -110,12 +110,12 @@
 	<parent>
 		<groupId>dev.rafex.ether</groupId>
 		<artifactId>ether</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.0.0-v20201006</version>
 	</parent>
 
 	<groupId>dev.rafex.ether.rest</groupId>
 	<artifactId>ether-rest</artifactId>
-	<version>1.0</version>
+	<version>1.0.1-v20201006</version>
 
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
@@ -171,12 +171,12 @@
 		<dependency>
 			<groupId>dev.rafex.ether.object</groupId>
 			<artifactId>ether-object</artifactId>
-			<version>1.0</version>
+			<version>${object.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>dev.rafex.ether.json</groupId>
 			<artifactId>ether-json</artifactId>
-			<version>1.0</version>
+			<version>${json.version}</version>
 		</dependency>
 
 		<dependency>
@@ -245,9 +245,6 @@
 			<plugin>
 				<artifactId>maven-gpg-plugin</artifactId>
 			</plugin>
-<!-- 			<plugin> -->
-<!-- 				<artifactId>maven-release-plugin</artifactId> -->
-<!-- 			</plugin> -->
 		</plugins>
 	</build>
 </project>
