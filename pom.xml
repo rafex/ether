@@ -156,7 +156,7 @@
 	</distributionManagement>
 
 	<properties>
-		<revision>2.0.0-v20201009</revision>
+		<revision>2.0.0-v20201010</revision>
 
 		<owner.name>Raúl Eduardo González Argote</owner.name>
 		<owner.email>rafex@rafex.dev</owner.email>
@@ -164,9 +164,9 @@
 
 	<modules>
 		<module>ether-parent</module>
+		<module>ether-json</module>
 		<module>ether-object</module>
 		<module>ether-properties</module>
-		<module>ether-json</module>
 		<module>ether-email</module>
 		<module>ether-jdbc</module>
 		<module>ether-cli</module>

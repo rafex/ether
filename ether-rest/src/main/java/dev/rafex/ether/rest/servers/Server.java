@@ -181,6 +181,7 @@ import java.util.EnumSet;
 import java.util.logging.Logger;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jetty.server.ServerConnector;
@@ -189,7 +190,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import dev.rafex.ether.rest.filters.CORSFilter;
+import dev.rafex.ether.rest.servlets.UtilFilter;
 import dev.rafex.ether.rest.servlets.UtilServlet;
 
 public class Server {
@@ -232,11 +233,10 @@ public class Server {
 		server.addConnector(connector);
 		servletContextHandler = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
 
-		final FilterHolder filter = new FilterHolder(new CORSFilter());
-		filter.setName("CorsFilter");
-
-		servletContextHandler.addFilter(filter, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST,
-				DispatcherType.FORWARD, DispatcherType.ASYNC));
+//		final FilterHolder filter = new FilterHolder(new CORSFilter());
+//		filter.setName("CorsFilter");
+//
+//		servletContextHandler.addFilter(filter, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC));
 
 		server.setHandler(servletContextHandler);
 
@@ -284,8 +284,20 @@ public class Server {
 	public void addServlet(final Class<? extends HttpServlet> httpServlet) {
 		if (servletContextHandler != null) {
 			servletContextHandler.addServlet(httpServlet, UtilServlet.getBasePath(httpServlet));
-			LOGGER.info("Se agrego servlet: [" + httpServlet + "] con la ruta: [" + UtilServlet.getBasePath(httpServlet)
-					+ "]");
+			LOGGER.info("Se agrego servlet: [" + httpServlet + "] con la ruta: [" + UtilServlet.getBasePath(httpServlet) + "]");
+		} else {
+			LOGGER.warning("ServletContextHandler null");
+			throw new NullPointerException("ServletContextHandler null");
+		}
+	}
+
+	public void addFilter(final Class<? extends Filter> filter, final EnumSet<DispatcherType> dispatches) {
+		final FilterHolder filterHolder = new FilterHolder(filter);
+		filterHolder.setName(UtilFilter.getName(filter));
+
+		if (servletContextHandler != null) {
+			servletContextHandler.addFilter(filterHolder, UtilFilter.getBasePath(filter), dispatches);
+			LOGGER.info("Se agrego filter: [" + filter + "] con la ruta: [" + UtilFilter.getBasePath(filter) + "]");
 		} else {
 			LOGGER.warning("ServletContextHandler null");
 			throw new NullPointerException("ServletContextHandler null");

@@ -179,24 +179,24 @@ package dev.rafex.ether.rest.servlets;
 
 import java.util.logging.Logger;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.Filter;
+import javax.servlet.annotation.WebFilter;
 
-public final class UtilServlet {
+public final class UtilFilter {
 
-	private static final Logger LOGGER = Logger.getLogger(UtilServlet.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(UtilFilter.class.getName());
 
-	private UtilServlet() {
+	private UtilFilter() {
 
 	}
 
-	public static String getBasePath(final Class<? extends HttpServlet> httpServlet) {
-		final String path = getBasePaths(httpServlet) != null && getBasePaths(httpServlet).length > 0 ? getBasePaths(httpServlet)[0] : null;
+	public static String getBasePath(final Class<? extends Filter> filter) {
+		final String path = getBasePaths(filter) != null && getBasePaths(filter).length > 0 ? getBasePaths(filter)[0] : null;
 		return path;
 	}
 
-	public static String[] getBasePaths(final Class<? extends HttpServlet> httpServlet) {
-		final WebServlet webServlet = httpServlet.getAnnotation(WebServlet.class);
+	public static String[] getBasePaths(final Class<? extends Filter> filter) {
+		final WebFilter webServlet = filter.getAnnotation(WebFilter.class);
 		String[] paths = null;
 
 		if (webServlet.value().length > 0) {
@@ -209,4 +209,13 @@ public final class UtilServlet {
 		return paths;
 	}
 
+	public static String getName(final Class<? extends Filter> filter) {
+		final WebFilter webServlet = filter.getAnnotation(WebFilter.class);
+
+		if (!webServlet.filterName().isBlank()) {
+			return webServlet.filterName();
+		}
+
+		return null;
+	}
 }
