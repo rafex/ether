@@ -110,12 +110,13 @@
 	<parent>
 		<groupId>dev.rafex.ether.parent</groupId>
 		<artifactId>ether-parent</artifactId>
-		<version>2.0.0.0-v20201007</version>
+		<version>${revision}</version>
+		<relativePath>../ether-parent</relativePath>
 	</parent>
 
 	<groupId>dev.rafex.ether.properties</groupId>
 	<artifactId>ether-properties</artifactId>
-	<version>2.0.0-v20201007</version>
+<!-- 	<version>${revision}</version> -->
 
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
