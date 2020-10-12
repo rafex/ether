@@ -2,6 +2,7 @@ package dev.rafex.ether.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -16,7 +17,12 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 public class JWebToken {
 
@@ -35,13 +41,13 @@ public class JWebToken {
 	}
 
 	public JWebToken(final JsonObject payload) {
-		this(payload.get("sub").getAsString(), payload.getJSONArray("aud"), payload.get("exp").getAsLong());
+		this(payload.get("sub").getAsString(), payload.get("aud").getAsJsonArray(), payload.get("exp").getAsLong());
 	}
 
-	public JWebToken(final String sub, final JSONArray aud, final long expires) {
+	public JWebToken(final String sub, final JsonArray aud, final long expires) {
 		this();
 		payload.addProperty("sub", sub);
-		payload.addProperty("aud", aud);
+		payload.add("aud", aud);
 		payload.addProperty("exp", expires);
 		payload.addProperty("iat", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
 		payload.addProperty("iss", ISSUER);
@@ -53,7 +59,7 @@ public class JWebToken {
 	 * For verification
 	 *
 	 * @param token
-	 * @throws java.security.NoSuchAlgorithmException
+	 * @throws Exception
 	 */
 	public JWebToken(final String token) throws NoSuchAlgorithmException {
 		this();
@@ -67,12 +73,13 @@ public class JWebToken {
 			throw new NoSuchAlgorithmException("JWT Header is Incorrect: " + parts[0]);
 		}
 
-		payload = new JsonObject(decode(parts[1]));
-		if (payload.isEmpty()) {
-			throw new Exception("Payload is Empty: ");
+//		payload = new JsonObject(decode(parts[1]));
+		payload = new JsonParser().parse(decode(parts[1])).getAsJsonObject();
+		if (payload.isJsonNull()) {
+			throw new JsonIOException("Payload is Empty: ");
 		}
 		if (!payload.has("exp")) {
-			throw new Exception("Payload doesn't contain expiry " + payload);
+			throw new JsonSyntaxException("Payload doesn't contain expiry " + payload);
 		}
 		signature = parts[2];
 	}
@@ -92,10 +99,10 @@ public class JWebToken {
 	}
 
 	public List<String> getAudience() {
-		final JSONArray arr = payload.getJSONArray("aud");
+		final JsonArray aud = payload.get("aud").getAsJsonArray();
 		final List<String> list = new ArrayList<>();
-		for (int i = 0; i < arr.length(); i++) {
-			list.add(arr.getString(i));
+		for (final JsonElement jsonElement : aud) {
+			list.add(jsonElement.getAsString());
 		}
 		return list;
 	}
@@ -122,8 +129,9 @@ public class JWebToken {
 	private String hmacSha256(final String data, final String secret) {
 		try {
 
-			// MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			final byte[] hash = secret.getBytes(StandardCharsets.UTF_8);// digest.digest(secret.getBytes(StandardCharsets.UTF_8));
+			final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//			final byte[] hash = secret.getBytes(StandardCharsets.UTF_8);// digest.digest(secret.getBytes(StandardCharsets.UTF_8));
+			final byte[] hash = digest.digest(secret.getBytes(StandardCharsets.UTF_8));
 
 			final Mac sha256Hmac = Mac.getInstance("HmacSHA256");
 			final SecretKeySpec secretKey = new SecretKeySpec(hash, "HmacSHA256");
