@@ -206,7 +206,6 @@ public class JWebToken {
 	Logger LOGGER = Logger.getLogger(JWebToken.class.getName());
 
 	private static final String SECRET_KEY = "FREE_MASON"; // @TODO Add Signature here
-	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 	private static final String ISSUER = "mason.metamug.net";
 	private static final String JWT_HEADER = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
 	private JsonObject payload = new JsonObject();
