@@ -175,187 +175,78 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.rest.servers;
+package dev.rafex.ether.rest.filters;
 
-import java.util.EnumSet;
+import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
+@WebFilter(filterName = "LogFilter", urlPatterns = { "/*" })
+public class LogFilter implements Filter {
 
-import dev.rafex.ether.rest.filters.LogFilter;
-import dev.rafex.ether.rest.servlets.UtilFilter;
-import dev.rafex.ether.rest.servlets.UtilServlet;
+	private final Logger LOGGER = Logger.getLogger(LogFilter.class.getName());
 
-public class Server {
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	@Override
+	public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain chain) throws IOException, ServletException {
 
-	private final Logger LOGGER = Logger.getLogger(Server.class.getName());
+		final HttpServletRequest request = (HttpServletRequest) servletRequest;
+		final HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-	private final org.eclipse.jetty.server.Server server;
-	private final ServerConnector connector;
-	private final int port;
-	private final String host;
-	private final ServletContextHandler servletContextHandler;
-	private final QueuedThreadPool queuedThreadPool;
-	private final int maxThreads;
-	private final int minThreads;
-	private final int idleTimeout;
+		LOGGER.info("LogFilter HTTP Request: " + request.getMethod());
 
-	private Server(final Builder builder) {
-		try {
-			Log.setLog(new dev.rafex.ether.rest.logger.Logger(java.util.logging.Logger.GLOBAL_LOGGER_NAME));
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-		port = builder.port;
-		host = builder.host;
-		maxThreads = builder.maxThreads;
-		minThreads = builder.minThreads;
-		idleTimeout = builder.idleTimeout;
-		queuedThreadPool = new QueuedThreadPool(maxThreads, minThreads, idleTimeout);
-		server = new org.eclipse.jetty.server.Server(queuedThreadPool);
+		// Getting servlet request URL
+		final String url = request.getRequestURL().toString();
 
-		LOGGER.info("Host: " + host);
-		LOGGER.info("Puerto: " + port);
-		LOGGER.info("Tiempo muerto: " + idleTimeout);
-		LOGGER.info("Minimo de hilos: " + minThreads);
-		LOGGER.info("Maximo de hilos: " + maxThreads);
+		// Getting servlet request query string.
+		final String queryString = request.getQueryString();
 
-		connector = new ServerConnector(server);
-		connector.setPort(port);
-		connector.setHost(host);
-		server.addConnector(connector);
-		servletContextHandler = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
+		// Getting request information without the hostname.
+		final String uri = request.getRequestURI();
 
-		final FilterHolder filter = new FilterHolder(new LogFilter());
-		filter.setName("LogFilter");
+		// Below we extract information about the request object path
+		// information.
+		final String scheme = request.getScheme();
+		final String serverName = request.getServerName();
+		final int portNumber = request.getServerPort();
+		final String contextPath = request.getContextPath();
+		final String servletPath = request.getServletPath();
+		final String pathInfo = request.getPathInfo();
+		final String query = request.getQueryString();
 
-		servletContextHandler.addFilter(filter, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC));
+		LOGGER.info("Url: " + url);
+		LOGGER.info("QueryString: " + queryString);
+		LOGGER.info("Uri: " + uri);
+		LOGGER.info("Scheme: " + scheme);
+		LOGGER.info("Server Name: " + serverName);
+		LOGGER.info("Port: " + portNumber);
+		LOGGER.info("Context Path: " + contextPath);
+		LOGGER.info("Servlet Path: " + servletPath);
+		LOGGER.info("Path Info: " + pathInfo);
+		LOGGER.info("Query: " + query);
 
-		server.setHandler(servletContextHandler);
-
-		LOGGER.info("Server construido");
-
+		chain.doFilter(request, response);
 	}
 
-	public void run() throws Exception {
-		try {
-			if (server != null) {
-				LOGGER.info("Server ejecutandose");
-				server.start();
-				server.join();
-			}
-		} catch (final InterruptedException e) {
-			LOGGER.info("Error al unirse al server");
-			LOGGER.warning(e.getMessage());
-		} catch (final Exception e) {
-			LOGGER.warning(e.getMessage());
-		}
+	@Override
+	public void init(final FilterConfig filterConfig) throws ServletException {
+		LOGGER.info("LogFilter Activado");
 	}
 
-	public void stop() {
-		try {
-			if (server != null) {
-				server.stop();
-				LOGGER.info("Server detenido");
-			}
-		} catch (final Exception e) {
-			LOGGER.warning(e.getMessage());
-		}
-	}
-
+	@Override
 	public void destroy() {
-		try {
-			if (server != null) {
-				server.destroy();
-				LOGGER.info("Server detenido");
-			}
-		} catch (final Exception e) {
-			LOGGER.warning(e.getMessage());
-		}
-	}
 
-	public void addServlet(final Class<? extends HttpServlet> httpServlet) {
-		if (servletContextHandler != null) {
-			servletContextHandler.addServlet(httpServlet, UtilServlet.getBasePath(httpServlet));
-			LOGGER.info("Se agrego servlet: [" + httpServlet + "] con la ruta: [" + UtilServlet.getBasePath(httpServlet) + "]");
-		} else {
-			LOGGER.warning("ServletContextHandler null");
-			throw new NullPointerException("ServletContextHandler null");
-		}
-	}
-
-	public void addFilter(final Class<? extends Filter> filter, final EnumSet<DispatcherType> dispatches) {
-		final FilterHolder filterHolder = new FilterHolder(filter);
-		filterHolder.setName(UtilFilter.getName(filter));
-
-		if (servletContextHandler != null) {
-			servletContextHandler.addFilter(filterHolder, UtilFilter.getBasePath(filter), dispatches);
-			LOGGER.info("Se agrego filter: [" + filter + "] con la ruta: [" + UtilFilter.getBasePath(filter) + "]");
-		} else {
-			LOGGER.warning("ServletContextHandler null");
-			throw new NullPointerException("ServletContextHandler null");
-		}
-	}
-
-	public static class Builder {
-		private int port;
-		private String host;
-		private int maxThreads;
-		private int minThreads;
-		private int idleTimeout;
-		private static Server instance;
-
-		public Builder() {
-			port = 8080;
-			host = "0.0.0.0";
-			maxThreads = 100;
-			minThreads = 10;
-			idleTimeout = 3000;
-		}
-
-		public Builder maxThreads(final int maxThreads) {
-			this.maxThreads = maxThreads;
-			return this;
-		}
-
-		public Builder minThreads(final int minThreads) {
-			this.minThreads = minThreads;
-			return this;
-		}
-
-		public Builder timeout(final int idleTimeout) {
-			this.idleTimeout = idleTimeout;
-			return this;
-		}
-
-		public Builder host(final String host) {
-			this.host = host;
-			return this;
-		}
-
-		public Builder port(final int port) {
-			this.port = port;
-			return this;
-		}
-
-		public Server build() {
-			if (instance == null) {
-				synchronized (Server.class) {
-					if (instance == null) {
-						instance = new Server(this);
-					}
-				}
-			}
-			return instance;
-		}
 	}
 
 }
