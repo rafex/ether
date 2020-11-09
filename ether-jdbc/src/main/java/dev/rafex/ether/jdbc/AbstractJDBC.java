@@ -177,6 +177,33 @@
  */
 package dev.rafex.ether.jdbc;
 
+import java.util.List;
+
 public abstract class AbstractJDBC<EntityJDBC> implements BasicJDBC<EntityJDBC> {
+
+	@Override
+	public EntityJDBC create(final EntityJDBC entity) {
+		return null;
+	}
+
+	@Override
+	public List<EntityJDBC> listAll() {
+		return null;
+	}
+
+	@Override
+	public EntityJDBC find(final Integer identificador) {
+		return null;
+	}
+
+	@Override
+	public void delete(final EntityJDBC entity) {
+
+	}
+
+	@Override
+	public void update(final EntityJDBC entity) {
+
+	}
 
 }

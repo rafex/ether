@@ -183,15 +183,17 @@ import java.util.Properties;
 
 public interface Connector {
 
-    Connection get(String className, String url, String user, String password);
+	Connection get(String className, String url, String user, String password);
 
-    Connection get(String className, String url);
+	Connection get(String className, String url);
 
-    Connection get(Driver driver, String url, String user, String password);
+	Connection get(Driver driver, String url, String user, String password);
 
-    Connection get(Driver driver, String url);
+	Connection get(Driver driver, String url);
 
-    Connection get(Properties properties, boolean environment);
+	Connection get(Properties properties, boolean environment);
 
-    void close();
+	Connection get(boolean environment);
+
+	void close();
 }
