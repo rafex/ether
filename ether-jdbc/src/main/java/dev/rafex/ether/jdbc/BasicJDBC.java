@@ -180,7 +180,7 @@ package dev.rafex.ether.jdbc;
 import java.util.List;
 import java.util.logging.Logger;
 
-interface BasicJDBC<EntityJDBC> {
+public interface BasicJDBC<EntityJDBC> {
 
 	Logger LOGGER = Logger.getLogger(BasicJDBC.class.getName());
 
