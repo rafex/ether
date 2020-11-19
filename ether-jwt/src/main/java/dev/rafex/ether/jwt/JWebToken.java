@@ -490,6 +490,13 @@ public class JWebToken {
 			return this;
 		}
 
+		public Builder expirationPlusHours(final int hours) {
+			if (hours > 0) {
+				PAYLOAD.addProperty("exp", NOW.plusHours(hours).toEpochSecond(ZoneOffset.UTC));
+			}
+			return this;
+		}
+
 		public Builder expirationPlusMinutes(final int minutes) {
 			if (minutes > 0) {
 				PAYLOAD.addProperty("exp", NOW.plusMinutes(minutes).toEpochSecond(ZoneOffset.UTC));
