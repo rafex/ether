@@ -182,9 +182,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
@@ -241,10 +243,73 @@ public class TestJWebToken {
 		System.out.println(token);
 		try {
 			incomingToken = new JWebToken(token);
-			if (incomingToken.isValid()) {
-				Assertions.assertEquals("1234", incomingToken.getSubject());
-				Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
-			}
+			Assertions.assertTrue(incomingToken.isValid());
+			Assertions.assertEquals("1234", incomingToken.getSubject());
+			Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
+		} catch (final NoSuchAlgorithmException ex) {
+			fail("Invalid Token" + ex.getMessage());
+		}
+
+	}
+
+	@Test
+	void expire5Minutes() {
+		// generate JWT
+//		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
+		final String[] audience = { "admin" };
+		final JWebToken jWebToken = new JWebToken.Builder().subject("1234").expirationPlusMinutes(5).audience(audience).build();
+		final String token = jWebToken.toString();
+		// verify and use
+		JWebToken incomingToken;
+		System.out.println(token);
+		try {
+			incomingToken = new JWebToken(token);
+			Assertions.assertTrue(incomingToken.isValid());
+			Assertions.assertEquals("1234", incomingToken.getSubject());
+			Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
+		} catch (final NoSuchAlgorithmException ex) {
+			fail("Invalid Token" + ex.getMessage());
+		}
+
+	}
+
+	@Test
+	void notBefore1Second() throws InterruptedException {
+		// generate JWT
+//		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
+		final String[] audience = { "admin" };
+		final JWebToken jWebToken = new JWebToken.Builder().subject("1234").expirationPlusMinutes(5).notBeforePlusSeconds(1).audience(audience).build();
+		final String token = jWebToken.toString();
+		TimeUnit.SECONDS.sleep(2);
+		// verify and use
+		JWebToken incomingToken;
+		System.out.println(token);
+		try {
+			incomingToken = new JWebToken(token);
+			Assertions.assertTrue(incomingToken.isValid());
+			Assertions.assertEquals("1234", incomingToken.getSubject());
+			Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
+		} catch (final NoSuchAlgorithmException ex) {
+			fail("Invalid Token" + ex.getMessage());
+		}
+
+	}
+
+	@Test
+	@Disabled("for demonstration purposes")
+	void expire1MinuteFail() throws InterruptedException {
+		// generate JWT
+//		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
+		final String[] audience = { "admin" };
+		final JWebToken jWebToken = new JWebToken.Builder().subject("1234").expirationPlusMinutes(1).audience(audience).build();
+		final String token = jWebToken.toString();
+		TimeUnit.MINUTES.sleep(2);
+		// verify and use
+		JWebToken incomingToken;
+		System.out.println(token);
+		try {
+			incomingToken = new JWebToken(token);
+			Assertions.assertFalse(incomingToken.isValid());
 		} catch (final NoSuchAlgorithmException ex) {
 			fail("Invalid Token" + ex.getMessage());
 		}
@@ -264,11 +329,10 @@ public class TestJWebToken {
 		System.out.println(token);
 		try {
 			incomingToken = new JWebToken(token);
-			if (incomingToken.isValid()) {
-				Assertions.assertEquals("1234", incomingToken.getSubject());
-				Assertions.assertEquals("rafex", incomingToken.get("user"));
-				Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
-			}
+			Assertions.assertTrue(incomingToken.isValid());
+			Assertions.assertEquals("1234", incomingToken.getSubject());
+			Assertions.assertEquals("rafex", incomingToken.get("user"));
+			Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
 		} catch (final NoSuchAlgorithmException ex) {
 			fail("Invalid Token" + ex.getMessage());
 		}

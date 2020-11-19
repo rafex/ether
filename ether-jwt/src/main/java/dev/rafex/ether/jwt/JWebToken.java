@@ -253,7 +253,7 @@ public class JWebToken {
 
 	private JWebToken(final Builder builder) {
 		this();
-		payload = builder.payload;
+		payload = builder.PAYLOAD;
 		signature = hmacSha256(encodedHeader + "." + encode(payload), SECRET_KEY);
 	}
 
@@ -375,7 +375,7 @@ public class JWebToken {
 
 	public boolean isValid() {
 		try {
-			if (payload.get("nbf") != null) {
+			if (payload.has("nbf")) {
 				return payload.get("exp").getAsLong() > LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
 						&& payload.get("nbf").getAsLong() < LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)// token not expired
 						&& signature.equals(hmacSha256(encodedHeader + "." + encode(payload), SECRET_KEY));
@@ -445,60 +445,89 @@ public class JWebToken {
 
 	public static class Builder {
 
-		private final JsonObject payload = new JsonObject();
+		private final JsonObject PAYLOAD = new JsonObject();
+		private final LocalDateTime NOW = LocalDateTime.now();
 
 		public Builder() {
 			super();
-			payload.addProperty("iss", "rafex.dev");
-			payload.addProperty("jti", "UUID.randomUUID().toString()");
-			payload.addProperty("iat", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+			PAYLOAD.addProperty("iss", "rafex.dev");
+			PAYLOAD.addProperty("jti", UUID.randomUUID().toString());
+			PAYLOAD.addProperty("iat", NOW.toEpochSecond(ZoneOffset.UTC));
 		}
 
 		public Builder issuer(final String issuer) {
 			if (issuer != null && !issuer.isBlank()) {
-				payload.addProperty("iss", issuer);
+				PAYLOAD.addProperty("iss", issuer);
 			}
 			return this;
 		}
 
 		public Builder subject(final String subject) {
 			if (subject != null && !subject.isBlank()) {
-				payload.addProperty("sub", subject);
+				PAYLOAD.addProperty("sub", subject);
 			}
 			return this;
 		}
 
 		public Builder audience(final String[] audience) {
 			if (audience != null && audience.length > 0) {
-				payload.add("aud", new Gson().toJsonTree(audience));
+				PAYLOAD.add("aud", new Gson().toJsonTree(audience));
 			}
 			return this;
 		}
 
-		public Builder expiration(final Long expiration) {
-			if (expiration != null && expiration > 0) {
-				payload.addProperty("exp", expiration);
+		public Builder expiration(final long expiration) {
+			if (expiration > 0) {
+				PAYLOAD.addProperty("exp", expiration);
 			}
 			return this;
 		}
 
-		public Builder notBefore(final Long notBefore) {
-			if (notBefore != null && notBefore > 0) {
-				payload.addProperty("nbf", notBefore);
+		public Builder expirationPlusDays(final int days) {
+			if (days > 0) {
+				PAYLOAD.addProperty("exp", NOW.plusDays(days).toEpochSecond(ZoneOffset.UTC));
 			}
 			return this;
 		}
 
-		public Builder issuedAt(final Long issuedAt) {
-			if (issuedAt != null && issuedAt > 0) {
-				payload.addProperty("iat", issuedAt);
+		public Builder expirationPlusMinutes(final int minutes) {
+			if (minutes > 0) {
+				PAYLOAD.addProperty("exp", NOW.plusMinutes(minutes).toEpochSecond(ZoneOffset.UTC));
+			}
+			return this;
+		}
+
+		public Builder notBefore(final long notBefore) {
+			if (notBefore > 0L) {
+				PAYLOAD.addProperty("nbf", notBefore);
+			}
+			return this;
+		}
+
+		public Builder notBeforePlusMinutes(final int minutes) {
+			if (minutes > 0) {
+				PAYLOAD.addProperty("nbf", NOW.plusMinutes(minutes).toEpochSecond(ZoneOffset.UTC));
+			}
+			return this;
+		}
+
+		public Builder notBeforePlusSeconds(final int seconds) {
+			if (seconds > 0) {
+				PAYLOAD.addProperty("nbf", NOW.plusSeconds(seconds).toEpochSecond(ZoneOffset.UTC));
+			}
+			return this;
+		}
+
+		public Builder issuedAt(final long issuedAt) {
+			if (issuedAt > 0) {
+				PAYLOAD.addProperty("iat", issuedAt);
 			}
 			return this;
 		}
 
 		public Builder jwtId(final String jwtId) {
 			if (jwtId != null && !jwtId.isBlank()) {
-				payload.addProperty("jti", jwtId); // how do we use this?
+				PAYLOAD.addProperty("jti", jwtId); // how do we use this?
 			}
 			return this;
 		}
@@ -513,7 +542,7 @@ public class JWebToken {
 
 		public Builder claim(final String property, final String value) {
 			if (property != null && !property.isBlank() && value != null && !value.isBlank()) {
-				payload.addProperty(property, value);
+				PAYLOAD.addProperty(property, value);
 			}
 			return this;
 		}
