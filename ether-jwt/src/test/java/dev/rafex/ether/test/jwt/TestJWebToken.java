@@ -232,7 +232,8 @@ public class TestJWebToken {
 	void testWithData() {
 		// generate JWT
 		final long exp = LocalDateTime.now().plusDays(90).toEpochSecond(ZoneOffset.UTC);
-		final String token = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp).toString();
+		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
+		final String token = jWebToken.toString();
 		// verify and use
 		JWebToken incomingToken;
 		System.out.println(token);

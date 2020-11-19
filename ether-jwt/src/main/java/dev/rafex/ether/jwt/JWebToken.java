@@ -177,6 +177,9 @@
  */
 package dev.rafex.ether.jwt;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -186,6 +189,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -201,13 +205,42 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import dev.rafex.ether.json.JsonUtils;
+
 public class JWebToken {
 
-	Logger LOGGER = Logger.getLogger(JWebToken.class.getName());
+	private final static Logger LOGGER = Logger.getLogger(JWebToken.class.getName());
 
-	private static final String SECRET_KEY = "FREE_MASON"; // @TODO Add Signature here
-	private static final String ISSUER = "mason.metamug.net";
+	static {
+		try {
+			LOGGER.info("Load secret key JWT");
+
+			String option = "";
+
+			if (JWebToken.loadProperties(JWebToken.JWT_PROPERTIES, JWebToken.PROPERTIES)) {
+				JWebToken.SECRET_KEY = JWebToken.PROPERTIES.getProperty("secret");
+				option = "Properties";
+			} else if (System.getenv(JWebToken.ENVIRONMENT_JWT_SECRET_KEY) != null) {
+				JWebToken.SECRET_KEY = JWebToken.ENVIRONMENT_JWT_SECRET_KEY;
+				option = "Enviroment";
+			} else {
+				JWebToken.SECRET_KEY = UUID.randomUUID().toString();
+				option = "UUID";
+			}
+
+			LOGGER.info("JWT Load option: " + option);
+
+		} catch (final SecurityException e) {
+			LOGGER.log(Level.WARNING, "[WARN] Error loading properties config: ", e);
+		}
+	}
+
+	private final static String ENVIRONMENT_JWT_SECRET_KEY = "ETHER_ENVIRONMENT_JWT_SECRET_KEY";
+	private static final String ISSUER = "rafex.dev";
 	private static final String JWT_HEADER = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
+	public static final String JWT_PROPERTIES = "jwt.properties";
+	public static Properties PROPERTIES;
+	private static String SECRET_KEY;
 	private JsonObject payload = new JsonObject();
 	private String signature;
 	private String encodedHeader;
@@ -252,11 +285,6 @@ public class JWebToken {
 			throw new JsonSyntaxException("Payload doesn't contain expiry " + payload);
 		}
 		signature = parts[2];
-	}
-
-	@Override
-	public String toString() {
-		return encodedHeader + "." + encode(payload) + "." + signature;
 	}
 
 	public boolean isValid() {
@@ -306,5 +334,29 @@ public class JWebToken {
 			LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
 			return null;
 		}
+	}
+
+	public String aJson() {
+		return JsonUtils.aJsonExcludeFieldsWithoutExposeAnnotation(this);
+	}
+
+	@Override
+	public String toString() {
+		return encodedHeader + "." + encode(payload) + "." + signature;
+	}
+
+	static boolean loadProperties(final String resourceName, final Properties props) {
+		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		final URL testProps = loader.getResource(resourceName);
+		if (testProps != null) {
+			try (InputStream in = testProps.openStream()) {
+				JWebToken.PROPERTIES = new Properties();
+				JWebToken.PROPERTIES.load(in);
+				return true;
+			} catch (final IOException e) {
+				LOGGER.log(Level.WARNING, "[WARN] Error loading properties config: ", e);
+			}
+		}
+		return false;
 	}
 }
