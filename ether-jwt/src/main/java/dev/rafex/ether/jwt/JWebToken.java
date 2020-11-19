@@ -186,7 +186,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
@@ -198,8 +198,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -242,27 +240,39 @@ public class JWebToken {
 	public static Properties PROPERTIES;
 	private static String SECRET_KEY;
 	private JsonObject payload = new JsonObject();
+
+	private String issuer;
+	private String subject;
+	private String[] audience;
+	private Long expiration;
+	private Long notBefore;
+	private Long issuedAt;
+	private String jwtId;
+
 	private String signature;
 	private String encodedHeader;
 
 	private JWebToken() {
+		super();
 		encodedHeader = encode(new Gson().fromJson(JWT_HEADER, JsonObject.class));
 	}
 
-	public JWebToken(final JsonObject payload) {
-		this(payload.get("sub").getAsString(), payload.get("aud").getAsJsonArray(), payload.get("exp").getAsLong());
+	private JWebToken(final Builder builder) {
+		super();
+		encodedHeader = encode(new Gson().fromJson(JWT_HEADER, JsonObject.class));
+		issuer = builder.issuer;
+		subject = builder.subject;
+		audience = builder.audience;
+		expiration = builder.expiration;
+		notBefore = builder.notBefore;
+		issuedAt = builder.issuedAt;
+		jwtId = builder.jwtId;
+		createPayload();
 	}
 
-	public JWebToken(final String sub, final JsonArray aud, final long expires) {
-		this();
-		payload.addProperty("sub", sub);
-		payload.add("aud", aud);
-		payload.addProperty("exp", expires);
-		payload.addProperty("iat", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
-		payload.addProperty("iss", ISSUER);
-		payload.addProperty("jti", UUID.randomUUID().toString()); // how do we use this?
-		signature = hmacSha256(encodedHeader + "." + encode(payload), SECRET_KEY);
-	}
+//	private JWebToken(final JsonObject payload) {
+//		this(payload.get("sub").getAsString(), payload.get("aud").getAsJsonArray(), payload.get("exp").getAsLong());
+//	}
 
 	public JWebToken(final String token) throws NoSuchAlgorithmException {
 		this();
@@ -287,34 +297,114 @@ public class JWebToken {
 		signature = parts[2];
 	}
 
+	/**
+	 * @return the payload
+	 */
+	public JsonObject getPayload() {
+		return payload;
+	}
+
+	/**
+	 * @return the issuer
+	 */
+	public String getIssuer() {
+		return issuer;
+	}
+
+	/**
+	 * @return the subject
+	 */
+	public String getSubject() {
+		return subject;
+	}
+
+	/**
+	 * @return the audience
+	 */
+	public List<String> getAudience() {
+		return Arrays.asList(audience);
+	}
+
+	/**
+	 * @return the expiration
+	 */
+	public Long getExpiration() {
+		return expiration;
+	}
+
+	/**
+	 * @return the notBefore
+	 */
+	public Long getNotBefore() {
+		return notBefore;
+	}
+
+	/**
+	 * @return the issuedAt
+	 */
+	public Long getIssuedAt() {
+		return issuedAt;
+	}
+
+	/**
+	 * @return the jwtId
+	 */
+	public String getJwtId() {
+		return jwtId;
+	}
+
+	/**
+	 * @return the signature
+	 */
+	public String getSignature() {
+		return signature;
+	}
+
+	/**
+	 * @return the encodedHeader
+	 */
+	public String getEncodedHeader() {
+		return encodedHeader;
+	}
+
+	private void createPayload() {
+		if (subject != null && !subject.isBlank()) {
+			payload.addProperty("sub", subject);
+		}
+		if (audience != null && audience.length > 0) {
+			payload.add("aud", new Gson().toJsonTree(audience));
+		}
+		if (expiration != null && expiration > 0) {
+			payload.addProperty("exp", expiration);
+		}
+		if (issuedAt != null && issuedAt > 0) {
+			payload.addProperty("iat", issuedAt);
+		}
+		if (issuer != null && !issuer.isBlank()) {
+			payload.addProperty("iss", issuer);
+		}
+		if (jwtId != null && !jwtId.isBlank()) {
+			payload.addProperty("jti", jwtId); // how do we use this?
+		}
+		if (notBefore != null && notBefore > 0) {
+			payload.addProperty("nbf", notBefore);
+		}
+		signature = hmacSha256(encodedHeader + "." + encode(payload), SECRET_KEY);
+	}
+
 	public boolean isValid() {
+		try {
+			if (payload.get("nbf") != null) {
+				return payload.get("exp").getAsLong() > LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+						&& payload.get("nbf").getAsLong() < LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)// token not expired
+						&& signature.equals(hmacSha256(encodedHeader + "." + encode(payload), SECRET_KEY));
+			}
+		} catch (final Exception e) {
+			LOGGER.log(Level.WARNING, "[WARN] Error nbf token ", e);
+		}
+
 		return payload.get("exp").getAsLong() > LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) // token not expired
 				&& signature.equals(hmacSha256(encodedHeader + "." + encode(payload), SECRET_KEY)); // signature matched
-	}
-
-	public String getSubject() {
-		return payload.get("sub").getAsString();
-	}
-
-	public List<String> getAudience() {
-		final JsonArray aud = payload.get("aud").getAsJsonArray();
-		final List<String> list = new ArrayList<>();
-		for (final JsonElement jsonElement : aud) {
-			list.add(jsonElement.getAsString());
-		}
-		return list;
-	}
-
-	private static String encode(final JsonObject obj) {
-		return encode(obj.toString().getBytes(StandardCharsets.UTF_8));
-	}
-
-	private static String encode(final byte[] bytes) {
-		return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-	}
-
-	private static String decode(final String encodedString) {
-		return new String(Base64.getUrlDecoder().decode(encodedString));
 	}
 
 	private String hmacSha256(final String data, final String secret) {
@@ -345,6 +435,18 @@ public class JWebToken {
 		return encodedHeader + "." + encode(payload) + "." + signature;
 	}
 
+	private static String encode(final JsonObject obj) {
+		return encode(obj.toString().getBytes(StandardCharsets.UTF_8));
+	}
+
+	private static String encode(final byte[] bytes) {
+		return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+	}
+
+	private static String decode(final String encodedString) {
+		return new String(Base64.getUrlDecoder().decode(encodedString));
+	}
+
 	static boolean loadProperties(final String resourceName, final Properties props) {
 		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		final URL testProps = loader.getResource(resourceName);
@@ -358,5 +460,62 @@ public class JWebToken {
 			}
 		}
 		return false;
+	}
+
+	public static class Builder {
+
+		private String issuer;
+		private String subject;
+		private String[] audience;
+		private Long expiration;
+		private Long notBefore;
+		private Long issuedAt;
+		private String jwtId;
+
+		public Builder() {
+			super();
+			issuer = "rafex.dev";
+			issuedAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+			jwtId = UUID.randomUUID().toString();
+		}
+
+		public Builder issuer(final String issuer) {
+			this.issuer = issuer;
+			return this;
+		}
+
+		public Builder subject(final String subject) {
+			this.subject = subject;
+			return this;
+		}
+
+		public Builder audience(final String[] audience) {
+			this.audience = audience;
+			return this;
+		}
+
+		public Builder expiration(final Long expiration) {
+			this.expiration = expiration;
+			return this;
+		}
+
+		public Builder notBefore(final Long notBefore) {
+			this.notBefore = notBefore;
+			return this;
+		}
+
+		public Builder issuedAt(final long issuedAt) {
+			this.issuedAt = issuedAt;
+			return this;
+		}
+
+		public Builder jwtId(final String jwtId) {
+			this.jwtId = jwtId;
+			return this;
+		}
+
+		public JWebToken build() {
+			return new JWebToken(this);
+		}
 	}
 }
