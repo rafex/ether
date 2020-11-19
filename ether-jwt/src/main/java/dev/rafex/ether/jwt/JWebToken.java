@@ -236,20 +236,12 @@ public class JWebToken {
 	}
 
 	private final static String ENVIRONMENT_JWT_SECRET_KEY = "ETHER_ENVIRONMENT_JWT_SECRET_KEY";
-	private static final String ISSUER = "rafex.dev";
 	private static final String JWT_HEADER = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
 	public static final String JWT_PROPERTIES = "jwt.properties";
 	public static Properties PROPERTIES;
 	private static String SECRET_KEY;
-	private JsonObject payload = new JsonObject();
 
-	private String issuer;
-	private String subject;
-	private String[] audience;
-	private Long expiration;
-	private Long notBefore;
-	private Long issuedAt;
-	private String jwtId;
+	private JsonObject payload;
 
 	private String signature;
 	private String encodedHeader;
@@ -260,16 +252,9 @@ public class JWebToken {
 	}
 
 	private JWebToken(final Builder builder) {
-		super();
-		encodedHeader = encode(new Gson().fromJson(JWT_HEADER, JsonObject.class));
-		issuer = builder.issuer;
-		subject = builder.subject;
-		audience = builder.audience;
-		expiration = builder.expiration;
-		notBefore = builder.notBefore;
-		issuedAt = builder.issuedAt;
-		jwtId = builder.jwtId;
-		createPayload();
+		this();
+		payload = builder.payload;
+		signature = hmacSha256(encodedHeader + "." + encode(payload), SECRET_KEY);
 	}
 
 //	private JWebToken(final JsonObject payload) {
@@ -370,6 +355,10 @@ public class JWebToken {
 		return payload.has(element) ? payload.get(element).getAsString() : "";
 	}
 
+	public String get(final String property) {
+		return payload.has(property) ? payload.get(property).getAsString() : "";
+	}
+
 	/**
 	 * @return the signature
 	 */
@@ -382,31 +371,6 @@ public class JWebToken {
 	 */
 	public String getEncodedHeader() {
 		return encodedHeader;
-	}
-
-	private void createPayload() {
-		if (subject != null && !subject.isBlank()) {
-			payload.addProperty("sub", subject);
-		}
-		if (audience != null && audience.length > 0) {
-			payload.add("aud", new Gson().toJsonTree(audience));
-		}
-		if (expiration != null && expiration > 0) {
-			payload.addProperty("exp", expiration);
-		}
-		if (issuedAt != null && issuedAt > 0) {
-			payload.addProperty("iat", issuedAt);
-		}
-		if (issuer != null && !issuer.isBlank()) {
-			payload.addProperty("iss", issuer);
-		}
-		if (jwtId != null && !jwtId.isBlank()) {
-			payload.addProperty("jti", jwtId); // how do we use this?
-		}
-		if (notBefore != null && notBefore > 0) {
-			payload.addProperty("nbf", notBefore);
-		}
-		signature = hmacSha256(encodedHeader + "." + encode(payload), SECRET_KEY);
 	}
 
 	public boolean isValid() {
@@ -481,53 +445,76 @@ public class JWebToken {
 
 	public static class Builder {
 
-		private String issuer;
-		private String subject;
-		private String[] audience;
-		private Long expiration;
-		private Long notBefore;
-		private Long issuedAt;
-		private String jwtId;
+		private final JsonObject payload = new JsonObject();
 
 		public Builder() {
 			super();
-			issuer = "rafex.dev";
-			issuedAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-			jwtId = UUID.randomUUID().toString();
+			payload.addProperty("iss", "rafex.dev");
+			payload.addProperty("jti", "UUID.randomUUID().toString()");
+			payload.addProperty("iat", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
 		}
 
 		public Builder issuer(final String issuer) {
-			this.issuer = issuer;
+			if (issuer != null && !issuer.isBlank()) {
+				payload.addProperty("iss", issuer);
+			}
 			return this;
 		}
 
 		public Builder subject(final String subject) {
-			this.subject = subject;
+			if (subject != null && !subject.isBlank()) {
+				payload.addProperty("sub", subject);
+			}
 			return this;
 		}
 
 		public Builder audience(final String[] audience) {
-			this.audience = audience;
+			if (audience != null && audience.length > 0) {
+				payload.add("aud", new Gson().toJsonTree(audience));
+			}
 			return this;
 		}
 
 		public Builder expiration(final Long expiration) {
-			this.expiration = expiration;
+			if (expiration != null && expiration > 0) {
+				payload.addProperty("exp", expiration);
+			}
 			return this;
 		}
 
 		public Builder notBefore(final Long notBefore) {
-			this.notBefore = notBefore;
+			if (notBefore != null && notBefore > 0) {
+				payload.addProperty("nbf", notBefore);
+			}
 			return this;
 		}
 
-		public Builder issuedAt(final long issuedAt) {
-			this.issuedAt = issuedAt;
+		public Builder issuedAt(final Long issuedAt) {
+			if (issuedAt != null && issuedAt > 0) {
+				payload.addProperty("iat", issuedAt);
+			}
 			return this;
 		}
 
 		public Builder jwtId(final String jwtId) {
-			this.jwtId = jwtId;
+			if (jwtId != null && !jwtId.isBlank()) {
+				payload.addProperty("jti", jwtId); // how do we use this?
+			}
+			return this;
+		}
+
+//		public Builder claim(final String property, final Object value) {
+//			if (property != null && !property.isBlank() && value != null) {
+//				final JsonElement jsonElement = new Gson().toJsonTree(value);
+//				payload.add(property, jsonElement);
+//			}
+//			return this;
+//		}
+
+		public Builder claim(final String property, final String value) {
+			if (property != null && !property.isBlank() && value != null && !value.isBlank()) {
+				payload.addProperty(property, value);
+			}
 			return this;
 		}
 

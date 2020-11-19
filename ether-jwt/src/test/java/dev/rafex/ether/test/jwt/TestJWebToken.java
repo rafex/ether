@@ -251,4 +251,28 @@ public class TestJWebToken {
 
 	}
 
+	@Test
+	void addClaim() {
+		// generate JWT
+		final long exp = LocalDateTime.now().plusDays(90).toEpochSecond(ZoneOffset.UTC);
+//		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
+		final String[] audience = { "admin" };
+		final JWebToken jWebToken = new JWebToken.Builder().subject("1234").claim("user", "rafex").expiration(exp).audience(audience).build();
+		final String token = jWebToken.toString();
+		// verify and use
+		JWebToken incomingToken;
+		System.out.println(token);
+		try {
+			incomingToken = new JWebToken(token);
+			if (incomingToken.isValid()) {
+				Assertions.assertEquals("1234", incomingToken.getSubject());
+				Assertions.assertEquals("rafex", incomingToken.get("user"));
+				Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
+			}
+		} catch (final NoSuchAlgorithmException ex) {
+			fail("Invalid Token" + ex.getMessage());
+		}
+
+	}
+
 }
