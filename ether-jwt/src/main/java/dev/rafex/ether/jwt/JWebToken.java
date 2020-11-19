@@ -186,7 +186,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
@@ -198,6 +198,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -308,49 +310,64 @@ public class JWebToken {
 	 * @return the issuer
 	 */
 	public String getIssuer() {
-		return issuer;
+		final String element = "iss";
+		return payload.has(element) ? payload.get(element).getAsString() : "";
 	}
 
 	/**
 	 * @return the subject
 	 */
 	public String getSubject() {
-		return subject;
+		final String element = "sub";
+		return payload.has(element) ? payload.get(element).getAsString() : "";
 	}
 
 	/**
 	 * @return the audience
 	 */
 	public List<String> getAudience() {
-		return Arrays.asList(audience);
+		final String element = "aud";
+		final List<String> list = new ArrayList<>();
+
+		if (payload.has(element)) {
+			final JsonArray aud = payload.get(element).getAsJsonArray();
+			for (final JsonElement jsonElement : aud) {
+				list.add(jsonElement.getAsString());
+			}
+		}
+		return list;
 	}
 
 	/**
 	 * @return the expiration
 	 */
 	public Long getExpiration() {
-		return expiration;
+		final String element = "exp";
+		return payload.has(element) ? payload.get(element).getAsLong() : 0;
 	}
 
 	/**
 	 * @return the notBefore
 	 */
 	public Long getNotBefore() {
-		return notBefore;
+		final String element = "nbf";
+		return payload.has(element) ? payload.get(element).getAsLong() : 0;
 	}
 
 	/**
 	 * @return the issuedAt
 	 */
 	public Long getIssuedAt() {
-		return issuedAt;
+		final String element = "iat";
+		return payload.has(element) ? payload.get(element).getAsLong() : 0;
 	}
 
 	/**
 	 * @return the jwtId
 	 */
 	public String getJwtId() {
-		return jwtId;
+		final String element = "jti";
+		return payload.has(element) ? payload.get(element).getAsString() : "";
 	}
 
 	/**
