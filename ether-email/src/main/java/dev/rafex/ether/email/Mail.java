@@ -189,4 +189,6 @@ public interface Mail extends Runnable {
 
 	void build(String from, String to, String subject, String message);
 
+	void send();
+
 }

@@ -387,4 +387,9 @@ public class MailImpl implements Mail {
 
 	}
 
+	@Override
+	public void send() {
+		run();
+	}
+
 }
