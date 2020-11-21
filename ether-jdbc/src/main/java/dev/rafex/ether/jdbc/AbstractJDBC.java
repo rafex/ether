@@ -177,11 +177,10 @@
  */
 package dev.rafex.ether.jdbc;
 
-import dev.rafex.ether.jdbc.connectors.Connector;
-import dev.rafex.ether.jdbc.connectors.impl.ConnectorImpl;
+import dev.rafex.ether.interfaces.EntityJDBC;
 
-public abstract class AbstractJDBC<EntityJDBC> implements BasicJDBC<EntityJDBC> {
+public abstract class AbstractJDBC implements BasicJDBC<EntityJDBC> {
 
-	public Connector connector = ConnectorImpl.getInstance();
+//	public Connector connector = ConnectorImpl.getInstance();
 
 }

@@ -180,18 +180,26 @@ package dev.rafex.ether.jdbc;
 import java.util.List;
 import java.util.logging.Logger;
 
-public interface BasicJDBC<EntityJDBC> {
+import dev.rafex.ether.interfaces.EntityJDBC;
+import dev.rafex.ether.jdbc.connectors.Connector;
+import dev.rafex.ether.jdbc.connectors.impl.ConnectorImpl;
+
+public interface BasicJDBC<T extends EntityJDBC> {
 
 	Logger LOGGER = Logger.getLogger(BasicJDBC.class.getName());
 
-	EntityJDBC create(EntityJDBC entity);
+	Connector CONNECTOR = ConnectorImpl.getInstance();
 
-	List<EntityJDBC> listAll();
+	T create(T entity);
 
-	EntityJDBC find(Integer identificador);
+	List<T> listAll();
 
-	void delete(EntityJDBC entity);
+	T find(Integer identificador);
 
-	void update(EntityJDBC entity);
+	T find(T entity);
+
+	void delete(T entity);
+
+	void update(T entity);
 
 }
