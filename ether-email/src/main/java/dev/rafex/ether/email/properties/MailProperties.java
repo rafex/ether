@@ -189,13 +189,13 @@ public final class MailProperties {
 
 	static {
 		try {
-			MailProperties.loadProperties(MailProperties.JDBC_PROPERTIES, MailProperties.PROPERTIES);
+			MailProperties.loadProperties(MailProperties.MAIL_PROPERTIES, MailProperties.PROPERTIES);
 		} catch (final SecurityException e) {
 			LOGGER.warning(e.getMessage());
 		}
 	}
 
-	public static final String JDBC_PROPERTIES = "mail.properties";
+	public static final String MAIL_PROPERTIES = "mail.properties";
 	public static Properties PROPERTIES;
 
 	private MailProperties() {

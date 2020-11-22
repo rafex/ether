@@ -279,8 +279,8 @@ public class MailImpl implements Mail {
 		private String userName;
 		private String password;
 		private Properties properties;
-		private final static String ENVIRONMENT_MAIL_PASSWORD = "JAVA_ENVIRONMENT_MAIL_PASSWORD";
-		private final static String ENVIRONMENT_MAIL_USER = "JAVA_ENVIRONMENT_MAIL_USER";
+		private final static String ENVIRONMENT_MAIL_PASSWORD = "ETHER_ENVIRONMENT_MAIL_PASSWORD";
+		private final static String ENVIRONMENT_MAIL_USER = "ETHER_ENVIRONMENT_MAIL_USER";
 
 		private static MailImpl instance;
 
@@ -385,6 +385,11 @@ public class MailImpl implements Mail {
 			LOGGER.warning(e.getMessage());
 		}
 
+	}
+
+	@Override
+	public void send() {
+		run();
 	}
 
 }

@@ -175,20 +175,78 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.email;
+package dev.rafex.ether.rest.filters;
 
-public interface Mail extends Runnable {
+import java.io.IOException;
+import java.util.logging.Logger;
 
-	void from(String from);
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-	void to(String to);
+@WebFilter(filterName = "LogFilter", urlPatterns = { "/*" })
+public class LogFilter implements Filter {
 
-	void subject(String subject);
+	private final Logger LOGGER = Logger.getLogger(LogFilter.class.getName());
 
-	void message(String message);
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	@Override
+	public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain chain) throws IOException, ServletException {
 
-	void build(String from, String to, String subject, String message);
+		final HttpServletRequest request = (HttpServletRequest) servletRequest;
+		final HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-	void send();
+		LOGGER.info("LogFilter HTTP Request: " + request.getMethod());
+
+		// Getting servlet request URL
+		final String url = request.getRequestURL().toString();
+
+		// Getting servlet request query string.
+		final String queryString = request.getQueryString();
+
+		// Getting request information without the hostname.
+		final String uri = request.getRequestURI();
+
+		// Below we extract information about the request object path
+		// information.
+		final String scheme = request.getScheme();
+		final String serverName = request.getServerName();
+		final int portNumber = request.getServerPort();
+		final String contextPath = request.getContextPath();
+		final String servletPath = request.getServletPath();
+		final String pathInfo = request.getPathInfo();
+		final String query = request.getQueryString();
+
+		LOGGER.info("Url: " + url);
+		LOGGER.info("QueryString: " + queryString);
+		LOGGER.info("Uri: " + uri);
+		LOGGER.info("Scheme: " + scheme);
+		LOGGER.info("Server Name: " + serverName);
+		LOGGER.info("Port: " + portNumber);
+		LOGGER.info("Context Path: " + contextPath);
+		LOGGER.info("Servlet Path: " + servletPath);
+		LOGGER.info("Path Info: " + pathInfo);
+		LOGGER.info("Query: " + query);
+
+		chain.doFilter(request, response);
+	}
+
+	@Override
+	public void init(final FilterConfig filterConfig) throws ServletException {
+		LOGGER.info("LogFilter Activado");
+	}
+
+	@Override
+	public void destroy() {
+
+	}
 
 }
