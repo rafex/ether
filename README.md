@@ -3,7 +3,34 @@ Esta biblioteca que hice es para no depender de #springboot, para crear servicio
 
 
 # Para compilar
-Requiere tener instalado Maven 3.x (yo use 3.6.3) y la versión del JDK con la que inicialmente empecé fue 14, pero recordando que muchos aún siguen en la versión 8 hice pruebas con esa versión y no hay problemas.
+Requiere tener instalado Maven 3.x (yo use 3.6.3) y la versión del JDK con la que inicialmente empecé fue 14, pero recordando que muchos aún siguen en la versión 8 hice pruebas con esa versión y no hay problemas. Sin embargo la versión publicada en el repositorio central de Maven es con Java versión 11.
 ```shell
 mvn clean compile
+```
+
+# Descarga la dependencia del repositorio central de Maven
+
+[Repositorio Central de Maven](https://search.maven.org/search?q=dev.rafex)
+
+En su proyecto deberán agregar lo siguiente para usar cualquiera de los modulos (jwt, rest, jdbc, etc...)
+
+```Shell
+<parent>
+	<groupId>dev.rafex.ether.parent</groupId>
+	<artifactId>ether-parent</artifactId>
+	<version>2.0.0-v20201122</version>
+	<relativePath/>
+</parent>
+```
+
+Y ya en dependencias podrán agregar el modulo deaseado
+
+```Shell
+<dependencies>
+	<dependency>
+		<groupId>dev.rafex.ether.rest</groupId>
+		<artifactId>ether-rest</artifactId>
+		<version>2.0.0-v20201122</version>
+	</dependency>
+</dependencies>
 ```
