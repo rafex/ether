@@ -175,20 +175,47 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.email;
+package dev.rafex.ether.rest.servlets;
 
-public interface Mail extends Runnable {
+import java.util.logging.Logger;
 
-	void from(String from);
+import javax.servlet.Filter;
+import javax.servlet.annotation.WebFilter;
 
-	void to(String to);
+public final class UtilFilter {
 
-	void subject(String subject);
+	private static final Logger LOGGER = Logger.getLogger(UtilFilter.class.getName());
 
-	void message(String message);
+	private UtilFilter() {
 
-	void build(String from, String to, String subject, String message);
+	}
 
-	void send();
+	public static String getBasePath(final Class<? extends Filter> filter) {
+		final String path = getBasePaths(filter) != null && getBasePaths(filter).length > 0 ? getBasePaths(filter)[0] : null;
+		return path;
+	}
 
+	public static String[] getBasePaths(final Class<? extends Filter> filter) {
+		final WebFilter webServlet = filter.getAnnotation(WebFilter.class);
+		String[] paths = null;
+
+		if (webServlet.value().length > 0) {
+			paths = webServlet.value();
+		}
+		if (webServlet.urlPatterns().length > 0) {
+			paths = webServlet.urlPatterns();
+		}
+		LOGGER.fine("Paths: " + paths);
+		return paths;
+	}
+
+	public static String getName(final Class<? extends Filter> filter) {
+		final WebFilter webServlet = filter.getAnnotation(WebFilter.class);
+
+		if (!webServlet.filterName().isBlank()) {
+			return webServlet.filterName();
+		}
+
+		return null;
+	}
 }
