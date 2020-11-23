@@ -177,10 +177,46 @@
  */
 package dev.rafex.ether.jdbc;
 
+import java.util.List;
+
 import dev.rafex.ether.interfaces.EntityJDBC;
 
 public abstract class AbstractJDBC implements BasicJDBC<EntityJDBC> {
 
-//	public Connector connector = ConnectorImpl.getInstance();
+	@Override
+	public EntityJDBC create(final EntityJDBC entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void delete(final EntityJDBC entity) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public EntityJDBC find(final EntityJDBC entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EntityJDBC find(final Integer identificador) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<EntityJDBC> listAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void update(final EntityJDBC entity) {
+		// TODO Auto-generated method stub
+
+	}
 
 }
