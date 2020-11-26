@@ -8,7 +8,7 @@
 	<groupId>dev.rafex.ether</groupId>
 	<artifactId>ether</artifactId>
 	<!-- <version>${revision.master}</version> -->
-	<version>2.0.0.0-v20201122</version>
+	<version>2.0.0.0-v20201126</version>
 
 	<packaging>pom</packaging>
 	<name>ether</name>

@@ -175,25 +175,44 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.jdbc.connectors;
+package dev.rafex.ether.email.properties;
 
-import java.sql.Connection;
-import java.sql.Driver;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
+import java.util.logging.Logger;
 
-public interface Connector {
+public final class PropertiesMail {
 
-	Connection get(String className, String url, String user, String password);
+	private static final Logger LOGGER = Logger.getLogger(PropertiesMail.class.getName());
 
-	Connection get(String className, String url);
+	static {
+		try {
+			PropertiesMail.loadProperties(PropertiesMail.MAIL_PROPERTIES, PropertiesMail.PROPERTIES);
+		} catch (final SecurityException e) {
+			LOGGER.warning(e.getMessage());
+		}
+	}
 
-	Connection get(Driver driver, String url, String user, String password);
+	public static final String MAIL_PROPERTIES = "mail.properties";
+	public static Properties PROPERTIES;
 
-	Connection get(Driver driver, String url);
+	private PropertiesMail() {
 
-	Connection get(Properties properties, boolean environment);
+	}
 
-	Connection get(boolean environment);
-
-	void close();
+	static void loadProperties(final String resourceName, final Properties props) {
+		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		final URL testProps = loader.getResource(resourceName);
+		if (testProps != null) {
+			try (InputStream in = testProps.openStream()) {
+				PropertiesMail.PROPERTIES = new Properties();
+				PropertiesMail.PROPERTIES.load(in);
+			} catch (final IOException e) {
+				LOGGER.warning("[WARN] Error loading logging config: " + testProps);
+				e.printStackTrace();
+			}
+		}
+	}
 }

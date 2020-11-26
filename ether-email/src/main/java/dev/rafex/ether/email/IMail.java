@@ -175,44 +175,20 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.jdbc.properties;
+package dev.rafex.ether.email;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+public interface IMail extends Runnable {
 
-public final class JDBCProperties {
+	void from(String from);
 
-	private static final Logger LOGGER = Logger.getLogger(JDBCProperties.class.getName());
+	void to(String to);
 
-	static {
-		try {
-			JDBCProperties.loadProperties(JDBCProperties.JDBC_PROPERTIES, JDBCProperties.PROPERTIES);
-		} catch (final SecurityException e) {
-			LOGGER.warning(e.getMessage());
-		}
-	}
+	void subject(String subject);
 
-	public static final String JDBC_PROPERTIES = "jdbc.properties";
-	public static Properties PROPERTIES;
+	void message(String message);
 
-	private JDBCProperties() {
+	void build(String from, String to, String subject, String message);
 
-	}
+	void send();
 
-	static void loadProperties(final String resourceName, final Properties props) {
-		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		final URL testProps = loader.getResource(resourceName);
-		if (testProps != null) {
-			try (InputStream in = testProps.openStream()) {
-				JDBCProperties.PROPERTIES = new Properties();
-				JDBCProperties.PROPERTIES.load(in);
-			} catch (final IOException e) {
-				LOGGER.log(Level.WARNING, "[WARN] Error loading properties config: ", e);
-			}
-		}
-	}
 }

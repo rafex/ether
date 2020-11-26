@@ -175,12 +175,25 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.interfaces;
+package dev.rafex.ether.jdbc.connectors;
 
-import java.util.logging.Logger;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.util.Properties;
 
-public interface InterfaceService {
+public interface IConnector {
 
-    Logger LOGGER = Logger.getLogger(InterfaceService.class.getName());
+	Connection get(String className, String url, String user, String password);
 
+	Connection get(String className, String url);
+
+	Connection get(Driver driver, String url, String user, String password);
+
+	Connection get(Driver driver, String url);
+
+	Connection get(Properties properties, boolean environment);
+
+	Connection get(boolean environment);
+
+	void close();
 }

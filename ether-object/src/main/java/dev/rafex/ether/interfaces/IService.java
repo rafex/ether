@@ -175,20 +175,12 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.email;
+package dev.rafex.ether.interfaces;
 
-public interface Mail extends Runnable {
+import java.util.logging.Logger;
 
-	void from(String from);
+public interface IService {
 
-	void to(String to);
-
-	void subject(String subject);
-
-	void message(String message);
-
-	void build(String from, String to, String subject, String message);
-
-	void send();
+    Logger LOGGER = Logger.getLogger(IService.class.getName());
 
 }
