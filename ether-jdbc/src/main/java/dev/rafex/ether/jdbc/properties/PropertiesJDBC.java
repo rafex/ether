@@ -175,12 +175,44 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.jdbc;
+package dev.rafex.ether.jdbc.properties;
 
-import dev.rafex.ether.interfaces.EntityJDBC;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public abstract class AbstractJDBC implements BasicJDBC<EntityJDBC> {
+public final class PropertiesJDBC {
 
-//	public Connector connector = ConnectorImpl.getInstance();
+	private static final Logger LOGGER = Logger.getLogger(PropertiesJDBC.class.getName());
 
+	static {
+		try {
+			PropertiesJDBC.loadProperties(PropertiesJDBC.JDBC_PROPERTIES, PropertiesJDBC.PROPERTIES);
+		} catch (final SecurityException e) {
+			LOGGER.warning(e.getMessage());
+		}
+	}
+
+	public static final String JDBC_PROPERTIES = "jdbc.properties";
+	public static Properties PROPERTIES;
+
+	private PropertiesJDBC() {
+
+	}
+
+	static void loadProperties(final String resourceName, final Properties props) {
+		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		final URL testProps = loader.getResource(resourceName);
+		if (testProps != null) {
+			try (InputStream in = testProps.openStream()) {
+				PropertiesJDBC.PROPERTIES = new Properties();
+				PropertiesJDBC.PROPERTIES.load(in);
+			} catch (final IOException e) {
+				LOGGER.log(Level.WARNING, "[WARN] Error loading properties config: ", e);
+			}
+		}
+	}
 }

@@ -175,162 +175,20 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.jdbc.connectors.impl;
+package dev.rafex.ether.email;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
-import java.util.logging.Logger;
+public interface IMail extends Runnable {
 
-import dev.rafex.ether.jdbc.connectors.Connector;
+	void from(String from);
 
-public class ConnectorImpl implements Connector {
+	void to(String to);
 
-	private final static String ENVIRONMENT_DATABASE_PASSWORD = "ETHER_ENVIRONMENT_DATABASE_PASSWORD";
-	private final static String ENVIRONMENT_DATABASE_USER = "ETHER_ENVIRONMENT_DATABASE_USER";
-	private final static String ENVIRONMENT_DATABASE_CLASSNAME = "ETHER_ENVIRONMENT_DATABASE_CLASSNAME";
-	private final static String ENVIRONMENT_DATABASE_URL = "ETHER_ENVIRONMENT_DATABASE_URL";
-	private final static String ENVIRONMENT_DATABASE_PORT = "ETHER_ENVIRONMENT_DATABASE_PORT";
-	private final static String ENVIRONMENT_DATABASE = "ETHER_ENVIRONMENT_DATABASE";
+	void subject(String subject);
 
-	private final Logger LOGGER = Logger.getLogger(ConnectorImpl.class.getName());
+	void message(String message);
 
-	private static ConnectorImpl instance;
-	private Connection connection;
+	void build(String from, String to, String subject, String message);
 
-	private ConnectorImpl() {
-	}
-
-	public static ConnectorImpl getInstance() {
-		if (instance == null) {
-			synchronized (ConnectorImpl.class) {
-				if (instance == null) {
-					instance = new ConnectorImpl();
-				}
-			}
-		}
-		return instance;
-	}
-
-	@Override
-	public Connection get(final Driver driver, final String url, final String user, final String password) {
-		try {
-			DriverManager.registerDriver(driver);
-		} catch (final SQLException e) {
-			LOGGER.warning(e.getMessage());
-		}
-		getConnection(new StringBuilder(url), user, password);
-
-		return connection;
-	}
-
-	@Override
-	public Connection get(final Driver driver, final String url) {
-		return get(driver, url, null, null);
-	}
-
-	@Override
-	public Connection get(final String className, final String url, final String user, final String password) {
-		try {
-			Class.forName(className);
-		} catch (final ClassNotFoundException e) {
-			LOGGER.warning(e.getMessage());
-		}
-		getConnection(new StringBuilder(url), user, password);
-		return connection;
-	}
-
-	@Override
-	public Connection get(final String className, final String url) {
-		return get(className, url, null, null);
-	}
-
-	@Override
-	public Connection get(final Properties properties, final boolean environment) {
-		try {
-			final String className = properties.getProperty("className");
-			Class.forName(className);
-		} catch (final ClassNotFoundException e) {
-			LOGGER.warning(e.getMessage());
-		}
-		final StringBuilder url = new StringBuilder("jdbc:");
-		url.append(properties.getProperty("url"));
-		url.append(":");
-		url.append(properties.getProperty("port"));
-		url.append("/");
-		url.append(properties.getProperty("database"));
-
-		if (environment) {
-			getConnection(url, System.getenv(ENVIRONMENT_DATABASE_USER), System.getenv(ENVIRONMENT_DATABASE_PASSWORD));
-		} else {
-			getConnection(url, properties);
-		}
-		return connection;
-	}
-
-	@Override
-	public Connection get(final boolean environment) {
-		try {
-			final String className = System.getenv(ENVIRONMENT_DATABASE_CLASSNAME);
-			Class.forName(className);
-		} catch (final ClassNotFoundException e) {
-			LOGGER.warning(e.getMessage());
-		}
-		final StringBuilder url = new StringBuilder("jdbc:");
-		url.append(System.getenv(ENVIRONMENT_DATABASE_URL));
-		url.append(":");
-		url.append(System.getenv(ENVIRONMENT_DATABASE_PORT));
-		url.append("/");
-		url.append(System.getenv(ENVIRONMENT_DATABASE));
-
-		if (environment) {
-			getConnection(url, System.getenv(ENVIRONMENT_DATABASE_USER), System.getenv(ENVIRONMENT_DATABASE_PASSWORD));
-		}
-
-		return connection;
-	}
-
-	@Override
-	public void close() {
-		try {
-			if (connection != null) {
-				connection.close();
-				System.out.println("Connection closed !!");
-			}
-		} catch (final SQLException e) {
-			LOGGER.warning(e.getMessage());
-		} catch (final Exception e) {
-			LOGGER.warning(e.getMessage());
-		}
-	}
-
-	private void getConnection(final StringBuilder url, final String user, final String password) {
-		try {
-			if (user == null && password == null) {
-				connection = DriverManager.getConnection(url.toString());
-			} else {
-				final Properties properties = new Properties();
-				properties.setProperty("user", user);
-				properties.setProperty("password", password);
-				getConnection(url, properties);
-			}
-		} catch (final SQLException e) {
-			LOGGER.warning(String.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage()));
-			close();
-		} catch (final Exception e) {
-			LOGGER.warning(e.getMessage());
-			close();
-		}
-	}
-
-	private void getConnection(final StringBuilder url, final Properties properties) {
-		try {
-			connection = DriverManager.getConnection(url.toString(), properties);
-		} catch (final SQLException e) {
-			LOGGER.warning(String.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage()));
-		}
-	}
+	void send();
 
 }

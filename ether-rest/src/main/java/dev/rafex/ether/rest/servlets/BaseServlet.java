@@ -198,6 +198,8 @@ public abstract class BaseServlet extends HttpServlet {
 
 	private final Logger LOGGER = Logger.getLogger(BaseServlet.class.getName());
 
+	private final String NOT_IMPLEMENTED = "not implemented";
+
 	public <T> T requestAsObject(final HttpServletRequest request, final Class<T> clazz) {
 		if (request.getContentType() != null && MimeTypes.Type.APPLICATION_JSON.asString().contains(request.getContentType())
 				|| MimeTypes.Type.APPLICATION_JSON.asString().equals(request.getContentType().trim())) {
@@ -300,35 +302,47 @@ public abstract class BaseServlet extends HttpServlet {
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		super.doGet(request, response);
+		notImplemented(response);
 	}
 
 	@Override
 	protected void doHead(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		super.doHead(request, response);
+		notImplemented(response);
 	}
 
 	@Override
 	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		super.doPost(request, response);
+		notImplemented(response);
 	}
 
 	@Override
 	protected void doPut(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		super.doPut(request, response);
+		notImplemented(response);
 	}
 
 	@Override
 	protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		super.doDelete(request, response);
+		notImplemented(response);
 	}
 
 	@Override
 	protected void doOptions(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		super.doOptions(request, response);
+		notImplemented(response);
 	}
 
 	@Override
 	protected void doTrace(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		super.doTrace(request, response);
+		notImplemented(response);
+	}
+
+	private void notImplemented(final HttpServletResponse response) {
+		LOGGER.info(NOT_IMPLEMENTED);
+		responseAsJson(response, new BaseResponseDto.Builder().code(405).message(NOT_IMPLEMENTED).build());
 	}
 }

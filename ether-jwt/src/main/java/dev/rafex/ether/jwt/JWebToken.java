@@ -207,7 +207,7 @@ import com.google.gson.JsonSyntaxException;
 
 import dev.rafex.ether.json.JsonUtils;
 
-public class JWebToken {
+public final class JWebToken {
 
 	private final static Logger LOGGER = Logger.getLogger(JWebToken.class.getName());
 
@@ -443,7 +443,7 @@ public class JWebToken {
 		return false;
 	}
 
-	public static class Builder {
+	public final static class Builder {
 
 		private final JsonObject PAYLOAD = new JsonObject();
 		private final LocalDateTime NOW = LocalDateTime.now();
