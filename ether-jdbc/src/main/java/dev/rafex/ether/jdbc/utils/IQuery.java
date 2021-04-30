@@ -1,6 +1,10 @@
 package dev.rafex.ether.jdbc.utils;
 
+import java.util.logging.Logger;
+
 public interface IQuery {
+
+	Logger LOGGER = Logger.getLogger(IQuery.class.getName());
 
 	String END_OF_LINE = ";";
 	String SELECT_DEFAULT = "SELECT * FROM ${table_name}";

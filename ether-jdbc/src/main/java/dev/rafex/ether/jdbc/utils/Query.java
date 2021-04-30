@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
 
 public class Query implements IQuery {
 
@@ -14,6 +15,7 @@ public class Query implements IQuery {
 	}
 
 	public PreparedStatement preparedStatement(final Connection connection) throws SQLException {
+		LOGGER.log(Level.INFO, query.toString());
 		return connection.prepareStatement(query.toString());
 	}
 
