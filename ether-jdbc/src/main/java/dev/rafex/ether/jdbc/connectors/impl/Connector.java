@@ -175,44 +175,162 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.email.properties;
+package dev.rafex.ether.jdbc.connectors.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-public final class MailProperties {
+import dev.rafex.ether.jdbc.connectors.IConnector;
 
-	private static final Logger LOGGER = Logger.getLogger(MailProperties.class.getName());
+public class Connector implements IConnector {
 
-	static {
+	private final static String ENVIRONMENT_DATABASE_PASSWORD = "ETHER_ENVIRONMENT_DATABASE_PASSWORD";
+	private final static String ENVIRONMENT_DATABASE_USER = "ETHER_ENVIRONMENT_DATABASE_USER";
+	private final static String ENVIRONMENT_DATABASE_CLASSNAME = "ETHER_ENVIRONMENT_DATABASE_CLASSNAME";
+	private final static String ENVIRONMENT_DATABASE_URL = "ETHER_ENVIRONMENT_DATABASE_URL";
+	private final static String ENVIRONMENT_DATABASE_PORT = "ETHER_ENVIRONMENT_DATABASE_PORT";
+	private final static String ENVIRONMENT_DATABASE = "ETHER_ENVIRONMENT_DATABASE";
+
+	private final Logger LOGGER = Logger.getLogger(Connector.class.getName());
+
+	private static Connector instance;
+	private Connection connection;
+
+	private Connector() {
+	}
+
+	public static Connector getInstance() {
+		if (instance == null) {
+			synchronized (Connector.class) {
+				if (instance == null) {
+					instance = new Connector();
+				}
+			}
+		}
+		return instance;
+	}
+
+	@Override
+	public Connection get(final Driver driver, final String url, final String user, final String password) {
 		try {
-			MailProperties.loadProperties(MailProperties.MAIL_PROPERTIES, MailProperties.PROPERTIES);
-		} catch (final SecurityException e) {
+			DriverManager.registerDriver(driver);
+		} catch (final SQLException e) {
+			LOGGER.warning(e.getMessage());
+		}
+		getConnection(new StringBuilder(url), user, password);
+
+		return connection;
+	}
+
+	@Override
+	public Connection get(final Driver driver, final String url) {
+		return get(driver, url, null, null);
+	}
+
+	@Override
+	public Connection get(final String className, final String url, final String user, final String password) {
+		try {
+			Class.forName(className);
+		} catch (final ClassNotFoundException e) {
+			LOGGER.warning(e.getMessage());
+		}
+		getConnection(new StringBuilder(url), user, password);
+		return connection;
+	}
+
+	@Override
+	public Connection get(final String className, final String url) {
+		return get(className, url, null, null);
+	}
+
+	@Override
+	public Connection get(final Properties properties, final boolean environment) {
+		try {
+			final String className = properties.getProperty("className");
+			Class.forName(className);
+		} catch (final ClassNotFoundException e) {
+			LOGGER.warning(e.getMessage());
+		}
+		final StringBuilder url = new StringBuilder("jdbc:");
+		url.append(properties.getProperty("url"));
+		url.append(":");
+		url.append(properties.getProperty("port"));
+		url.append("/");
+		url.append(properties.getProperty("database"));
+
+		if (environment) {
+			getConnection(url, System.getenv(ENVIRONMENT_DATABASE_USER), System.getenv(ENVIRONMENT_DATABASE_PASSWORD));
+		} else {
+			getConnection(url, properties);
+		}
+		return connection;
+	}
+
+	@Override
+	public Connection get(final boolean environment) {
+		try {
+			final String className = System.getenv(ENVIRONMENT_DATABASE_CLASSNAME);
+			Class.forName(className);
+		} catch (final ClassNotFoundException e) {
+			LOGGER.warning(e.getMessage());
+		}
+		final StringBuilder url = new StringBuilder("jdbc:");
+		url.append(System.getenv(ENVIRONMENT_DATABASE_URL));
+		url.append(":");
+		url.append(System.getenv(ENVIRONMENT_DATABASE_PORT));
+		url.append("/");
+		url.append(System.getenv(ENVIRONMENT_DATABASE));
+
+		if (environment) {
+			getConnection(url, System.getenv(ENVIRONMENT_DATABASE_USER), System.getenv(ENVIRONMENT_DATABASE_PASSWORD));
+		}
+
+		return connection;
+	}
+
+	@Override
+	public void close() {
+		try {
+			if (connection != null) {
+				connection.close();
+				System.out.println("Connection closed !!");
+			}
+		} catch (final SQLException e) {
+			LOGGER.warning(e.getMessage());
+		} catch (final Exception e) {
 			LOGGER.warning(e.getMessage());
 		}
 	}
 
-	public static final String MAIL_PROPERTIES = "mail.properties";
-	public static Properties PROPERTIES;
-
-	private MailProperties() {
-
-	}
-
-	static void loadProperties(final String resourceName, final Properties props) {
-		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		final URL testProps = loader.getResource(resourceName);
-		if (testProps != null) {
-			try (InputStream in = testProps.openStream()) {
-				MailProperties.PROPERTIES = new Properties();
-				MailProperties.PROPERTIES.load(in);
-			} catch (final IOException e) {
-				LOGGER.warning("[WARN] Error loading logging config: " + testProps);
-				e.printStackTrace();
+	private void getConnection(final StringBuilder url, final String user, final String password) {
+		try {
+			if (user == null && password == null) {
+				connection = DriverManager.getConnection(url.toString());
+			} else {
+				final Properties properties = new Properties();
+				properties.setProperty("user", user);
+				properties.setProperty("password", password);
+				getConnection(url, properties);
 			}
+		} catch (final SQLException e) {
+			LOGGER.warning(String.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage()));
+			close();
+		} catch (final Exception e) {
+			LOGGER.warning(e.getMessage());
+			close();
 		}
 	}
+
+	private void getConnection(final StringBuilder url, final Properties properties) {
+		try {
+			connection = DriverManager.getConnection(url.toString(), properties);
+		} catch (final SQLException e) {
+			LOGGER.warning(String.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage()));
+		}
+	}
+
 }

@@ -175,31 +175,24 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.jdbc;
+package dev.rafex.ether.interfaces;
 
 import java.util.List;
 import java.util.logging.Logger;
 
-import dev.rafex.ether.interfaces.EntityJDBC;
-import dev.rafex.ether.jdbc.connectors.Connector;
-import dev.rafex.ether.jdbc.connectors.impl.ConnectorImpl;
+public interface IDao<T> {
 
-public interface BasicJDBC<T extends EntityJDBC> {
-
-	Logger LOGGER = Logger.getLogger(BasicJDBC.class.getName());
-
-	Connector CONNECTOR = ConnectorImpl.getInstance();
+	Logger LOGGER = Logger.getLogger(IDao.class.getName());
 
 	T create(T entity);
 
 	List<T> listAll();
 
-	T find(Integer identificador);
+	List<T> list(int skip, int limit);
 
-	T find(T entity);
+	T find(Integer identificador);
 
 	void delete(T entity);
 
 	void update(T entity);
-
 }

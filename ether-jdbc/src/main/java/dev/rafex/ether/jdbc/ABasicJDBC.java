@@ -175,22 +175,48 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.interfaces;
+package dev.rafex.ether.jdbc;
 
 import java.util.List;
-import java.util.logging.Logger;
 
-public interface InterfaceDao<T> {
+import dev.rafex.ether.interfaces.IEntityJDBC;
 
-    Logger LOGGER = Logger.getLogger(InterfaceDao.class.getName());
+public abstract class ABasicJDBC implements IBasicJDBC<IEntityJDBC> {
 
-    T create(T entity);
+	@Override
+	public IEntityJDBC create(final IEntityJDBC entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    List<T> listAll();
+	@Override
+	public void delete(final IEntityJDBC entity) {
+		// TODO Auto-generated method stub
 
-    T find(Integer identificador);
+	}
 
-    void delete(T entity);
+	@Override
+	public IEntityJDBC find(final IEntityJDBC entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    void update(T entity);
+	@Override
+	public IEntityJDBC find(final Integer identificador) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<IEntityJDBC> listAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void update(final IEntityJDBC entity) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
