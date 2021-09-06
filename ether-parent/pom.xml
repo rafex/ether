@@ -93,6 +93,9 @@
 		<commons-lang3.version>3.12.0</commons-lang3.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
 
+		<guice.version>4.2.3</guice.version>
+		<openjpa.version>3.2.0</openjpa.version>
+
 		<junit-bom.version>5.7.0</junit-bom.version>
 
 		<rest.version>${revision}</rest.version>
@@ -102,7 +105,6 @@
 		<jdbc.version>${revision}</jdbc.version>
 		<email.version>${revision}</email.version>
 		<cli.version>${revision}</cli.version>
-
 	</properties>
 
 	<dependencyManagement>
@@ -119,6 +121,16 @@
 			<!-- Test -->
 
 			<!-- 3er -->
+			<dependency>
+				<groupId>com.google.inject</groupId>
+				<artifactId>guice</artifactId>
+				<version>${guice.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.openjpa</groupId>
+				<artifactId>openjpa</artifactId>
+				<version>${openjpa.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
