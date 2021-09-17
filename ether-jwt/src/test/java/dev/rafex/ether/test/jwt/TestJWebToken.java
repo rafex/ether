@@ -195,7 +195,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import dev.rafex.ether.jwt.JWebToken;
+import dev.rafex.ether.jwt.impl.JWebTokenImpl;
 
 public class TestJWebToken {
 
@@ -236,13 +236,13 @@ public class TestJWebToken {
 		final long exp = LocalDateTime.now().plusDays(90).toEpochSecond(ZoneOffset.UTC);
 //		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
 		final String[] audience = { "admin" };
-		final JWebToken jWebToken = new JWebToken.Builder().subject("1234").expiration(exp).audience(audience).build();
+		final JWebTokenImpl jWebToken = new JWebTokenImpl.Builder().subject("1234").expiration(exp).audience(audience).build();
 		final String token = jWebToken.toString();
 		// verify and use
-		JWebToken incomingToken;
+		JWebTokenImpl incomingToken;
 		System.out.println(token);
 		try {
-			incomingToken = new JWebToken(token);
+			incomingToken = new JWebTokenImpl(token);
 			Assertions.assertTrue(incomingToken.isValid());
 			Assertions.assertEquals("1234", incomingToken.getSubject());
 			Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
@@ -257,13 +257,13 @@ public class TestJWebToken {
 		// generate JWT
 //		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
 		final String[] audience = { "admin" };
-		final JWebToken jWebToken = new JWebToken.Builder().subject("1234").expirationPlusMinutes(5).audience(audience).build();
+		final JWebTokenImpl jWebToken = new JWebTokenImpl.Builder().subject("1234").expirationPlusMinutes(5).audience(audience).build();
 		final String token = jWebToken.toString();
 		// verify and use
-		JWebToken incomingToken;
+		JWebTokenImpl incomingToken;
 		System.out.println(token);
 		try {
-			incomingToken = new JWebToken(token);
+			incomingToken = new JWebTokenImpl(token);
 			Assertions.assertTrue(incomingToken.isValid());
 			Assertions.assertEquals("1234", incomingToken.getSubject());
 			Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
@@ -278,14 +278,14 @@ public class TestJWebToken {
 		// generate JWT
 //		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
 		final String[] audience = { "admin" };
-		final JWebToken jWebToken = new JWebToken.Builder().subject("1234").expirationPlusMinutes(5).notBeforePlusSeconds(1).audience(audience).build();
+		final JWebTokenImpl jWebToken = new JWebTokenImpl.Builder().subject("1234").expirationPlusMinutes(5).notBeforePlusSeconds(1).audience(audience).build();
 		final String token = jWebToken.toString();
 		TimeUnit.SECONDS.sleep(2);
 		// verify and use
-		JWebToken incomingToken;
+		JWebTokenImpl incomingToken;
 		System.out.println(token);
 		try {
-			incomingToken = new JWebToken(token);
+			incomingToken = new JWebTokenImpl(token);
 			Assertions.assertTrue(incomingToken.isValid());
 			Assertions.assertEquals("1234", incomingToken.getSubject());
 			Assertions.assertEquals("admin", incomingToken.getAudience().get(0));
@@ -301,14 +301,14 @@ public class TestJWebToken {
 		// generate JWT
 //		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
 		final String[] audience = { "admin" };
-		final JWebToken jWebToken = new JWebToken.Builder().subject("1234").expirationPlusMinutes(1).audience(audience).build();
+		final JWebTokenImpl jWebToken = new JWebTokenImpl.Builder().subject("1234").expirationPlusMinutes(1).audience(audience).build();
 		final String token = jWebToken.toString();
 		TimeUnit.MINUTES.sleep(2);
 		// verify and use
-		JWebToken incomingToken;
+		JWebTokenImpl incomingToken;
 		System.out.println(token);
 		try {
-			incomingToken = new JWebToken(token);
+			incomingToken = new JWebTokenImpl(token);
 			Assertions.assertFalse(incomingToken.isValid());
 		} catch (final NoSuchAlgorithmException ex) {
 			fail("Invalid Token" + ex.getMessage());
@@ -322,13 +322,13 @@ public class TestJWebToken {
 		final long exp = LocalDateTime.now().plusDays(90).toEpochSecond(ZoneOffset.UTC);
 //		final JWebToken jWebToken = new JWebToken("1234", jsonParser.parse("['admin']").getAsJsonArray(), exp);
 		final String[] audience = { "admin" };
-		final JWebToken jWebToken = new JWebToken.Builder().subject("1234").claim("user", "rafex").expiration(exp).audience(audience).build();
+		final JWebTokenImpl jWebToken = new JWebTokenImpl.Builder().subject("1234").claim("user", "rafex").expiration(exp).audience(audience).build();
 		final String token = jWebToken.toString();
 		// verify and use
-		JWebToken incomingToken;
+		JWebTokenImpl incomingToken;
 		System.out.println(token);
 		try {
-			incomingToken = new JWebToken(token);
+			incomingToken = new JWebTokenImpl(token);
 			Assertions.assertTrue(incomingToken.isValid());
 			Assertions.assertEquals("1234", incomingToken.getSubject());
 			Assertions.assertEquals("rafex", incomingToken.get("user"));

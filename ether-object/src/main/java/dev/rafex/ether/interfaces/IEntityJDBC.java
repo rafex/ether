@@ -179,6 +179,6 @@ package dev.rafex.ether.interfaces;
 
 import java.io.Serializable;
 
-public interface EntityJDBC extends Serializable {
+public interface IEntityJDBC extends Serializable {
 
 }

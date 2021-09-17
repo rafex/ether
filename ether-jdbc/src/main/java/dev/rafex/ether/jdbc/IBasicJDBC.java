@@ -175,22 +175,46 @@
  * permanent authorization for you to choose that version for the
  * Library.
  */
-package dev.rafex.ether.interfaces;
+package dev.rafex.ether.jdbc;
 
 import java.util.List;
 import java.util.logging.Logger;
 
-public interface InterfaceDao<T> {
+import dev.rafex.ether.interfaces.IEntityJDBC;
+import dev.rafex.ether.jdbc.connectors.IConnector;
+import dev.rafex.ether.jdbc.connectors.impl.Connector;
 
-    Logger LOGGER = Logger.getLogger(InterfaceDao.class.getName());
+public interface IBasicJDBC<T extends IEntityJDBC> {
 
-    T create(T entity);
+	Logger LOGGER = Logger.getLogger(IBasicJDBC.class.getName());
 
-    List<T> listAll();
+	IConnector CONNECTOR = Connector.getInstance();
 
-    T find(Integer identificador);
+	T create(T entity);
 
-    void delete(T entity);
+	List<T> listAll();
 
-    void update(T entity);
+	List<T> list(int skip, int limit);
+
+	T find(Integer identificador);
+
+	T find(T entity);
+
+	void delete(T entity);
+
+	void update(T entity);
+
+	static String names(final String[] array) {
+		final StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < array.length; i++) {
+			if (i + 1 == array.length) {
+				sb.append(array[i]);
+			} else {
+				sb.append(array[i]);
+				sb.append(",");
+			}
+		}
+		return sb.toString();
+	}
+
 }

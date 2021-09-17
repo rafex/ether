@@ -34,3 +34,9 @@ Y ya en dependencias podrán agregar el modulo deaseado
 	</dependency>
 </dependencies>
 ```
+
+### license-maven-plugin ###
+
+  * `license:check`: verify if some files miss license header. This goal is attached to the verify phase if declared in your pom.xml like above.
+  * `license:format`: add the license header when missing. If a header is existing, it is updated to the new one.
+  * `license:remove`: remove existing license header
