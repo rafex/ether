@@ -182,41 +182,40 @@ import java.util.List;
 import dev.rafex.ether.interfaces.IEntityJDBC;
 
 public abstract class ABasicJDBC implements IBasicJDBC<IEntityJDBC> {
-
-	@Override
-	public IEntityJDBC create(final IEntityJDBC entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void delete(final IEntityJDBC entity) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public IEntityJDBC find(final IEntityJDBC entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IEntityJDBC find(final Integer identificador) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<IEntityJDBC> listAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void update(final IEntityJDBC entity) {
-		// TODO Auto-generated method stub
-
-	}
-
+  
+  @Override
+  public IEntityJDBC create(final IEntityJDBC entity) {
+    return null;
+  }
+  
+  @Override
+  public void delete(final IEntityJDBC entity) {
+    
+  }
+  
+  @Override
+  public IEntityJDBC find(final IEntityJDBC entity) {
+    return null;
+  }
+  
+  @Override
+  public IEntityJDBC find(final Integer identificador) {
+    return null;
+  }
+  
+  @Override
+  public List<IEntityJDBC> list(final int skip, final int limit) {
+    return null;
+  }
+  
+  @Override
+  public List<IEntityJDBC> listAll() {
+    return null;
+  }
+  
+  @Override
+  public void update(final IEntityJDBC entity) {
+    
+  }
+  
 }
